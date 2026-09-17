@@ -30,21 +30,26 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   return (
     <main>
       <section
-        className="relative overflow-hidden py-16 md:py-24"
-        style={{ backgroundImage: "url('/images/hero-bg.svg')", backgroundSize: "cover", backgroundPosition: "center" }}
+        className="relative overflow-hidden bg-[#FBF3E7]"
       >
-        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-10 items-center relative z-10">
-          <div>
-            <span className="inline-block text-xs uppercase tracking-wide bg-chili/10 text-chili px-3 py-1 rounded-full mb-4">{d.hero_badge}</span>
-            <h1 className="font-heritage text-4xl md:text-5xl leading-tight text-cinnamon">{d.hero_title}</h1>
-            <p className="mt-4 text-lg opacity-80">{d.hero_sub}</p>
-            <div className="mt-6 flex gap-3">
-              <Link href={`/${lang}/shop`} className="bg-chili text-white px-6 py-3 rounded-full font-medium hover:opacity-90">{d.hero_cta}</Link>
-              <Link href={`/${lang}/about`} className="border border-cinnamon px-6 py-3 rounded-full font-medium hover:bg-cinnamon/5">{d.hero_cta2}</Link>
+        <div className="relative mx-auto w-full max-w-6xl aspect-[1122/1402]">
+          <Image
+            src="/images/home-banner.jpg.jpeg"
+            alt="Aura Foods organic spices"
+            width={1122}
+            height={1402}
+            priority
+            sizes="100vw"
+            className="absolute inset-0 h-full w-full object-contain"
+          />
+          <div className="absolute inset-x-0 top-[7%] mx-auto max-w-xl px-4 text-center text-cinnamon">
+            <span className="inline-block text-xs uppercase tracking-wide bg-[#FBF3E7]/80 text-chili px-3 py-1 rounded-full mb-3">{d.hero_badge}</span>
+            <h1 className="font-heritage text-3xl md:text-5xl leading-tight drop-shadow-sm">{d.hero_title}</h1>
+            <p className="mt-3 text-base md:text-lg opacity-90 drop-shadow-sm">{d.hero_sub}</p>
+            <div className="mt-5 flex justify-center gap-3">
+              <Link href={`/${lang}/shop`} className="bg-chili text-white px-5 py-2.5 rounded-full font-medium shadow-md hover:opacity-90">{d.hero_cta}</Link>
+              <Link href={`/${lang}/about`} className="border border-cinnamon bg-[#FBF3E7]/75 px-5 py-2.5 rounded-full font-medium shadow-md hover:bg-[#FBF3E7]">{d.hero_cta2}</Link>
             </div>
-          </div>
-          <div className="relative aspect-square">
-            <Image src="/images/hero.jpeg" alt="Aura Foods spices" fill className="object-cover rounded-3xl shadow-xl" />
           </div>
         </div>
       </section>
