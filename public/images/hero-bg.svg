@@ -1,0 +1,69 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FBF3E7" />
+      <stop offset="55%" stop-color="#F7E4C4" />
+      <stop offset="100%" stop-color="#F0D6A8" />
+    </linearGradient>
+    <radialGradient id="turmericGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E8A33D" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#E8A33D" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="chiliGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#C1440E" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#C1440E" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="cardamomGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6B8E4E" stop-opacity="0.30" />
+      <stop offset="100%" stop-color="#6B8E4E" stop-opacity="0" />
+    </radialGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="40" />
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise" />
+      <feColorMatrix in="noise" type="matrix"
+        values="0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0.04 0" />
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#base)" />
+
+  <!-- ambient color blooms -->
+  <circle cx="1250" cy="180" r="420" fill="url(#turmericGlow)" filter="url(#soft)" />
+  <circle cx="120" cy="760" r="380" fill="url(#chiliGlow)" filter="url(#soft)" />
+  <circle cx="820" cy="850" r="360" fill="url(#cardamomGlow)" filter="url(#soft)" />
+  <circle cx="1500" cy="700" r="300" fill="url(#chiliGlow)" filter="url(#soft)" opacity="0.6" />
+
+  <!-- scattered whole chilies (simple organic silhouettes) -->
+  <g opacity="0.22" fill="#C1440E">
+    <path d="M1120 620 C1150 600 1190 610 1200 650 C1210 690 1180 740 1140 760 C1110 775 1080 760 1075 730 C1068 690 1090 640 1120 620 Z" />
+    <path d="M1120 620 C1112 600 1098 585 1082 578" stroke="#6B8E4E" stroke-width="10" fill="none" stroke-linecap="round" />
+  </g>
+  <g opacity="0.16" fill="#C1440E" transform="translate(260,120) rotate(25)">
+    <path d="M1120 620 C1150 600 1190 610 1200 650 C1210 690 1180 740 1140 760 C1110 775 1080 760 1075 730 C1068 690 1090 640 1120 620 Z" />
+  </g>
+  <g opacity="0.14" fill="#C1440E" transform="translate(-680,-40) rotate(-15) scale(0.8)">
+    <path d="M1120 620 C1150 600 1190 610 1200 650 C1210 690 1180 740 1140 760 C1110 775 1080 760 1075 730 C1068 690 1090 640 1120 620 Z" />
+  </g>
+
+  <!-- turmeric root-like curved shapes -->
+  <g opacity="0.18" fill="none" stroke="#E8A33D" stroke-width="26" stroke-linecap="round">
+    <path d="M60 260 C140 230 200 280 190 340 C182 390 120 410 80 380" />
+    <path d="M1420 380 C1500 360 1540 410 1520 460 C1505 500 1450 510 1420 480" />
+  </g>
+
+  <!-- small leaf accents -->
+  <g opacity="0.20" fill="#6B8E4E">
+    <ellipse cx="1360" cy="120" rx="34" ry="14" transform="rotate(35 1360 120)" />
+    <ellipse cx="1400" cy="95" rx="30" ry="12" transform="rotate(60 1400 95)" />
+    <ellipse cx="150" cy="640" rx="30" ry="13" transform="rotate(-20 150 640)" />
+    <ellipse cx="185" cy="615" rx="26" ry="11" transform="rotate(-50 185 615)" />
+  </g>
+
+  <!-- fine grain texture for a hand-crafted, market-stall feel -->
+  <rect width="1600" height="900" filter="url(#grain)" opacity="0.5" />
+</svg>
