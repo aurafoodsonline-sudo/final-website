@@ -1,5 +1,5 @@
 import { Lang, t } from "@/lib/constants";
-import Image from "next/image";
+import AboutCarousel from "@/components/AboutCarousel";
 
 const VALUES = [
   { en: ["100% Organic", "Sourced from trusted Pakistani farms without synthetic chemicals."], ur: ["100% آرگینک", "قابلِ اعتماد پاکستانی کھیتوں سے، کیمیکل سے پاک۔"] },
@@ -18,9 +18,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       <p className="opacity-80 max-w-2xl mb-10">{d.about_lead}</p>
 
       <div className="grid md:grid-cols-2 gap-10 items-center mb-14">
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-black">
-          <Image src="/images/story.jpg" alt="Aura Foods story" fill className="object-contain" sizes="(max-width: 768px) 100vw, 50vw" />
-        </div>
+        <AboutCarousel />
         <div>
           <h2 className="font-heritage text-2xl mb-2">{d.about_h2}</h2>
           <p className="opacity-80">{d.about_h2_body}</p>
