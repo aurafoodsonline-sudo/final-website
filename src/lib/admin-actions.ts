@@ -111,8 +111,10 @@ export async function setWebsiteStock(formData: FormData) {
 
 export async function updateProductContent(formData: FormData) {
   const id = Number(formData.get("id"));
+  const [existingProduct] = await db.select({ slug: products.slug }).from(products).where(eq(products.id, id));
+  const newSlug = String(formData.get("slug"));
   await db.update(products).set({
-    slug: String(formData.get("slug")), sku: String(formData.get("sku")),
+    slug: newSlug, sku: String(formData.get("sku")),
     categoryId: Number(formData.get("categoryId")), image: String(formData.get("image") ?? ""),
     weightLabel: String(formData.get("weightLabel")), price: Number(formData.get("price")),
     oldPrice: formData.get("oldPrice") ? Number(formData.get("oldPrice")) : null,
@@ -137,6 +139,16 @@ export async function updateProductContent(formData: FormData) {
   }).where(eq(products.id, id));
   revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${id}`);
+  revalidatePath("/en");
+  revalidatePath("/ur");
+  revalidatePath("/en/shop");
+  revalidatePath("/ur/shop");
+  if (existingProduct?.slug) {
+    revalidatePath(`/en/product/${existingProduct.slug}`);
+    revalidatePath(`/ur/product/${existingProduct.slug}`);
+  }
+  revalidatePath(`/en/product/${newSlug}`);
+  revalidatePath(`/ur/product/${newSlug}`);
   redirect(`/admin/products/${id}`);
 }
 
