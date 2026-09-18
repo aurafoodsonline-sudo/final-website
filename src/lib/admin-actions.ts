@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { suppliers, rawMaterials, rawMaterialPurchases, processingRecords, finishedGoodsBatches, packagingRecords, products, reviews } from "@/db/schema";
+import { categories, suppliers, rawMaterials, rawMaterialPurchases, processingRecords, finishedGoodsBatches, packagingRecords, products, reviews } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
