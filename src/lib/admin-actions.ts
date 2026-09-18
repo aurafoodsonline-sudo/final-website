@@ -4,6 +4,9 @@ import { suppliers, rawMaterials, rawMaterialPurchases, processingRecords, finis
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { randomUUID } from "node:crypto";
 
 export async function createSupplier(formData: FormData) {
   await db.insert(suppliers).values({
@@ -113,9 +116,22 @@ export async function updateProductContent(formData: FormData) {
   const id = Number(formData.get("id"));
   const [existingProduct] = await db.select({ slug: products.slug }).from(products).where(eq(products.id, id));
   const newSlug = String(formData.get("slug"));
+  let image = String(formData.get("image") ?? "");
+  const imageFile = formData.get("imageFile");
+  if (imageFile instanceof File && imageFile.size > 0) {
+    if (!imageFile.type.startsWith("image/") || imageFile.size > 5 * 1024 * 1024) {
+      throw new Error("Product images must be image files smaller than 5 MB.");
+    }
+    const extension = imageFile.type === "image/png" ? "png" : imageFile.type === "image/webp" ? "webp" : "jpg";
+    const fileName = `product-${id}-${randomUUID()}.${extension}`;
+    const imageDirectory = path.join(process.cwd(), "public", "images", "products");
+    await mkdir(imageDirectory, { recursive: true });
+    await writeFile(path.join(imageDirectory, fileName), Buffer.from(await imageFile.arrayBuffer()));
+    image = `/images/products/${fileName}`;
+  }
   await db.update(products).set({
     slug: newSlug, sku: String(formData.get("sku")),
-    categoryId: Number(formData.get("categoryId")), image: String(formData.get("image") ?? ""),
+    categoryId: Number(formData.get("categoryId")), image,
     weightLabel: String(formData.get("weightLabel")), price: Number(formData.get("price")),
     oldPrice: formData.get("oldPrice") ? Number(formData.get("oldPrice")) : null,
     bestSeller: formData.get("bestSeller") === "on" ? 1 : 0,
