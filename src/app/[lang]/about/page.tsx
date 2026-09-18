@@ -18,8 +18,8 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       <p className="opacity-80 max-w-2xl mb-10">{d.about_lead}</p>
 
       <div className="grid md:grid-cols-2 gap-10 items-center mb-14">
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-          <Image src="/images/story.jpg" alt="Aura Foods story" fill className="object-cover" />
+        <div className="relative aspect-square rounded-2xl overflow-hidden bg-black">
+          <Image src="/images/story.jpg" alt="Aura Foods story" fill className="object-contain" sizes="(max-width: 768px) 100vw, 50vw" />
         </div>
         <div>
           <h2 className="font-heritage text-2xl mb-2">{d.about_h2}</h2>
