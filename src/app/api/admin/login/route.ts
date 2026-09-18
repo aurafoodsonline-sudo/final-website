@@ -10,10 +10,14 @@ export async function POST(req: NextRequest) {
   const username = String(fd.get("username") ?? "");
   const password = String(fd.get("password") ?? "");
   const [user] = await db.select().from(adminUsers).where(eq(adminUsers.username, username));
-  const url = new URL(req.url);
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const forwardedProto = req.headers.get("x-forwarded-proto") ?? "https";
+  const origin = forwardedHost
+    ? `${forwardedProto.split(",")[0].trim()}://${forwardedHost.split(",")[0].trim()}`
+    : new URL(req.url).origin;
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-    return NextResponse.redirect(new URL("/admin/login?error=1", url.origin));
+    return NextResponse.redirect(new URL("/admin/login?error=1", origin));
   }
   await createSession(user.id, user.username);
-  return NextResponse.redirect(new URL("/admin", url.origin));
+  return NextResponse.redirect(new URL("/admin", origin));
 }
