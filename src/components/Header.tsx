@@ -34,9 +34,9 @@ export default function Header({ lang }: { lang: Lang }) {
           </Link>
         </div>
       </div>
-      <nav className="md:hidden flex items-center gap-4 overflow-x-auto px-4 pb-2 text-sm">
+      <nav className="md:hidden flex flex-wrap justify-center gap-x-4 gap-y-2 px-4 pb-2 text-sm">
         {nav.map(([href, label]) => (
-          <Link key={href} href={href} className="whitespace-nowrap hover:text-chili">{label}</Link>
+          <Link key={href} href={href} className="hover:text-chili">{label}</Link>
         ))}
       </nav>
     </header>
