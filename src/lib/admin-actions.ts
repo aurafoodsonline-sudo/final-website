@@ -47,6 +47,67 @@ export async function createRawMaterial(formData: FormData) {
   revalidatePath("/admin/inventory/raw-materials");
 }
 
+export async function createCategory(formData: FormData) {
+  await db.insert(categories).values({
+    slug: String(formData.get("slug")),
+    nameEn: String(formData.get("nameEn")),
+    nameUr: String(formData.get("nameUr")),
+    image: String(formData.get("image") ?? ""),
+    sortOrder: Number(formData.get("sortOrder")) || 0,
+  });
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/products/new");
+  revalidatePath("/en/shop");
+  revalidatePath("/ur/shop");
+}
+
+export async function updateCategory(formData: FormData) {
+  const id = Number(formData.get("id"));
+  await db.update(categories).set({
+    slug: String(formData.get("slug")),
+    nameEn: String(formData.get("nameEn")),
+    nameUr: String(formData.get("nameUr")),
+    image: String(formData.get("image") ?? ""),
+    sortOrder: Number(formData.get("sortOrder")) || 0,
+  }).where(eq(categories.id, id));
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/products/new");
+  revalidatePath("/en/shop");
+  revalidatePath("/ur/shop");
+}
+
+export async function createProduct(formData: FormData) {
+  const slug = String(formData.get("slug"));
+  await db.insert(products).values({
+    slug, sku: String(formData.get("sku")), categoryId: Number(formData.get("categoryId")),
+    nameEn: String(formData.get("nameEn")), nameUr: String(formData.get("nameUr")),
+    taglineEn: String(formData.get("taglineEn") ?? ""), taglineUr: String(formData.get("taglineUr") ?? ""),
+    descriptionEn: String(formData.get("descriptionEn") ?? ""), descriptionUr: String(formData.get("descriptionUr") ?? ""),
+    ingredientsEn: String(formData.get("ingredientsEn") ?? ""), ingredientsUr: String(formData.get("ingredientsUr") ?? ""),
+    usageEn: String(formData.get("usageEn") ?? ""), usageUr: String(formData.get("usageUr") ?? ""),
+    weightLabel: String(formData.get("weightLabel")), price: Number(formData.get("price")),
+    oldPrice: formData.get("oldPrice") ? Number(formData.get("oldPrice")) : null,
+    image: String(formData.get("image") ?? ""),
+    bestSeller: formData.get("bestSeller") === "on" ? 1 : 0,
+    newArrival: formData.get("newArrival") === "on" ? 1 : 0,
+    featured: formData.get("featured") === "on" ? 1 : 0,
+    wholesaleEligible: formData.get("wholesaleEligible") === "on" ? 1 : 0,
+    wholesalePrice: formData.get("wholesalePrice") ? Number(formData.get("wholesalePrice")) : null,
+    websiteStockStatus: String(formData.get("websiteStockStatus") ?? "available"),
+    websiteStockQty: formData.get("websiteStockQty") ? Number(formData.get("websiteStockQty")) : null,
+    isHidden: formData.get("isHidden") === "on" ? 1 : 0,
+    imageAltEn: String(formData.get("imageAltEn") ?? ""), imageAltUr: String(formData.get("imageAltUr") ?? ""),
+  });
+  revalidatePath("/admin/products");
+  revalidatePath("/en");
+  revalidatePath("/ur");
+  revalidatePath("/en/shop");
+  revalidatePath("/ur/shop");
+  revalidatePath(`/en/product/${slug}`);
+  revalidatePath(`/ur/product/${slug}`);
+  redirect("/admin/products");
+}
+
 export async function createProcessingRecord(formData: FormData) {
   const rawMaterialId = Number(formData.get("rawMaterialId"));
   const qtySent = Number(formData.get("qtySent"));

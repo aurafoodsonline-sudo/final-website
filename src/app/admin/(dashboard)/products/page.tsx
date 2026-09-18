@@ -7,7 +7,10 @@ export default async function AdminProductsPage() {
   const all = await db.select().from(products);
   return (
     <div>
-      <h1 className="font-heritage text-2xl mb-2">Products / Website Stock</h1>
+      <div className="flex items-center justify-between gap-4 mb-2">
+        <h1 className="font-heritage text-2xl">Products / Website Stock</h1>
+        <Link href="/admin/products/new" className="bg-chili text-white px-4 py-2 rounded-full text-sm">Add product</Link>
+      </div>
       <p className="text-sm opacity-70 mb-4 max-w-2xl">
         Website Stock Status is admin-controlled and completely independent from Internal Inventory Stock (auto-updated by Packaging). Changing internal stock never changes what customers see, and vice versa.
       </p>
