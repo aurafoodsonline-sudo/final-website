@@ -111,9 +111,23 @@ export async function setWebsiteStock(formData: FormData) {
 export async function updateProductContent(formData: FormData) {
   const id = Number(formData.get("id"));
   await db.update(products).set({
+    slug: String(formData.get("slug")), sku: String(formData.get("sku")),
+    categoryId: Number(formData.get("categoryId")), image: String(formData.get("image") ?? ""),
+    weightLabel: String(formData.get("weightLabel")), price: Number(formData.get("price")),
+    oldPrice: formData.get("oldPrice") ? Number(formData.get("oldPrice")) : null,
+    bestSeller: formData.get("bestSeller") === "on" ? 1 : 0,
+    newArrival: formData.get("newArrival") === "on" ? 1 : 0,
+    featured: formData.get("featured") === "on" ? 1 : 0,
+    wholesaleEligible: formData.get("wholesaleEligible") === "on" ? 1 : 0,
+    wholesalePrice: formData.get("wholesalePrice") ? Number(formData.get("wholesalePrice")) : null,
     nameEn: String(formData.get("nameEn")), nameUr: String(formData.get("nameUr")),
     taglineEn: String(formData.get("taglineEn") ?? ""), taglineUr: String(formData.get("taglineUr") ?? ""),
     descriptionEn: String(formData.get("descriptionEn") ?? ""), descriptionUr: String(formData.get("descriptionUr") ?? ""),
+    ingredientsEn: String(formData.get("ingredientsEn") ?? ""), ingredientsUr: String(formData.get("ingredientsUr") ?? ""),
+    usageEn: String(formData.get("usageEn") ?? ""), usageUr: String(formData.get("usageUr") ?? ""),
+    websiteStockStatus: String(formData.get("websiteStockStatus")),
+    websiteStockQty: formData.get("websiteStockQty") ? Number(formData.get("websiteStockQty")) : null,
+    isHidden: formData.get("isHidden") === "on" ? 1 : 0,
     metaTitleEn: String(formData.get("metaTitleEn") ?? ""), metaTitleUr: String(formData.get("metaTitleUr") ?? ""),
     metaDescriptionEn: String(formData.get("metaDescriptionEn") ?? ""), metaDescriptionUr: String(formData.get("metaDescriptionUr") ?? ""),
     canonicalUrl: String(formData.get("canonicalUrl") ?? ""),
