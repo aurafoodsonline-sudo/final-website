@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { orders, orderItems, products } from "@/db/schema";
 import { genOrderNumber } from "@/lib/data";
-import { sendWhatsAppOrderConfirmation } from "@/lib/whatsapp";
+import { normalizeWhatsAppPhone, sendWhatsAppAdminAlert, sendWhatsAppOrderConfirmation } from "@/lib/whatsapp";
 import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { customerName, customerPhone, customerAddress, city, paymentMethod, items } = body;
+  const normalizedPhone = normalizeWhatsAppPhone(String(customerPhone));
 
-  if (!customerName || !customerPhone || !customerAddress || !items?.length) {
+  if (!customerName || !normalizedPhone || !customerAddress || !items?.length) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }
 
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
   const createdAt = new Date().toISOString();
 
   const [order] = await db.insert(orders).values({
-    orderNumber, source: "website", customerName, customerPhone, customerAddress, city,
+    orderNumber, source: "website", customerName, customerPhone: normalizedPhone, customerAddress, city,
     subtotal, deliveryCharges, total, paymentMethod,
     paymentStatus: "pending", orderStatus: "pending",
     whatsappConfirmationStatus: "not_sent", createdAt,
@@ -43,9 +44,10 @@ export async function POST(req: NextRequest) {
 
   const itemsText = items.map((i: any) => `${i.name} x${i.qty}`).join("\n");
   const wa = await sendWhatsAppOrderConfirmation({
-    orderNumber, customerName, customerPhone, itemsText, subtotal, deliveryCharges, total, paymentMethod, customerAddress, createdAt,
+    orderNumber, customerName, customerPhone: normalizedPhone, itemsText, subtotal, deliveryCharges, total, paymentMethod, customerAddress, createdAt,
   });
   await db.update(orders).set({ whatsappConfirmationStatus: wa.status, whatsappSentAt: wa.status === "sent" ? createdAt : null }).where(eq(orders.id, order.id));
+  await sendWhatsAppAdminAlert({ orderNumber, customerName, customerPhone: normalizedPhone, total, itemsText });
 
-  return NextResponse.json({ orderNumber });
+  return NextResponse.json({ orderNumber, customerPhone: normalizedPhone, whatsappStatus: wa.status });
 }

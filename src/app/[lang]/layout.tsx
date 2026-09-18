@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const isUr = lang === "ur";
   return {
     metadataBase: new URL(SITE_URL),
-    title: isUr ? "آورا فوڈز — خالص ذائقے کے لیے تیار کیا گیا" : "Aura Foods — Crafted for Pure Taste",
+    title: isUr ? "آورا فوڈز — خالص • معیاری • خوشبودار" : "Aura Foods — Crafted for Pure Taste",
     description: isUr
       ? "پاکستان بھر میں ڈیلیوری کے ساتھ خالص اور پریمیم آرگینک مصالحے۔"
       : "Pure & Premium Organic Spices, delivered across Pakistan and beyond.",
@@ -26,6 +26,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       canonical: `${SITE_URL}/${lang}`,
       languages: { en: `${SITE_URL}/en`, ur: `${SITE_URL}/ur` },
     },
+    openGraph: {
+      url: SITE_URL,
+      type: "website",
+      title: isUr ? "آورا فوڈز — خالص • معیاری • خوشبودار" : "Aura Foods — Crafted for Pure Taste",
+      siteName: "Aura Foods",
+    },
+    verification: process.env.FACEBOOK_DOMAIN_VERIFICATION
+      ? { other: { "facebook-domain-verification": process.env.FACEBOOK_DOMAIN_VERIFICATION } }
+      : undefined,
     icons: { icon: "/images/favicon.jpg" },
   };
 }
@@ -63,6 +72,13 @@ export default async function LangLayout({ children, params }: { children: React
         />
       </head>
       <body className="font-body">
+        {process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID}');fbq('track','PageView');`,
+            }}
+          />
+        )}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <Header lang={l} />
         {children}

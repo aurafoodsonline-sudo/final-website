@@ -11,7 +11,7 @@ export const SOCIAL_LINKS = {
   tiktok: "https://tiktok.com/@aurafoodsonline",
   daraz: "https://daraz.pk/shop/d-mall-23/",
 };
-export const SITE_URL = "https://aurafoods.online";
+export const SITE_URL = "https://www.aurafoods.online";
 
 export const DICT = {
   en: {

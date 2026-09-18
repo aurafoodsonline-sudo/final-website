@@ -36,7 +36,7 @@ export default function CheckoutForm({ lang }: { lang: Lang }) {
     setSubmitting(false);
     if (json.orderNumber) {
       clearCart();
-      router.push(`/${lang}/order-confirmed?ref=${json.orderNumber}`);
+      router.push(`/${lang}/order-confirmed?ref=${encodeURIComponent(json.orderNumber)}&phone=${encodeURIComponent(json.customerPhone ?? "")}&wa=${encodeURIComponent(json.whatsappStatus ?? "not_sent")}`);
     } else {
       setError(json.error ?? "Something went wrong.");
     }
