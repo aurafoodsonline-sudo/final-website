@@ -6,7 +6,7 @@ export default function Footer({ lang }: { lang: Lang }) {
   const d = t(lang);
   return (
     <footer className="bg-cinnamon text-cream mt-16">
-      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Image src="/images/logo.jpg" alt="Aura Foods" width={40} height={40} className="rounded-full" />
