@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { suppliers, rawMaterials, rawMaterialPurchases, processingRecords, finishedGoodsBatches, packagingRecords, products, reviews } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function createSupplier(formData: FormData) {
   await db.insert(suppliers).values({
@@ -135,6 +136,8 @@ export async function updateProductContent(formData: FormData) {
     imageAltEn: String(formData.get("imageAltEn") ?? ""), imageAltUr: String(formData.get("imageAltUr") ?? ""),
   }).where(eq(products.id, id));
   revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${id}`);
+  redirect(`/admin/products/${id}`);
 }
 
 export async function moderateReview(formData: FormData) {

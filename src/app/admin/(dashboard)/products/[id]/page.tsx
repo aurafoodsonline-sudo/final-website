@@ -2,6 +2,9 @@ import { db } from "@/db";
 import { categories, products } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import Image from "next/image";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
 import { updateProductContent } from "@/lib/admin-actions";
 
 export default async function ProductEditPage({ params }: { params: Promise<{ id: string }> }) {
@@ -9,6 +12,9 @@ export default async function ProductEditPage({ params }: { params: Promise<{ id
   const [p] = await db.select().from(products).where(eq(products.id, Number(id)));
   const allCategories = await db.select().from(categories);
   if (!p) return notFound();
+  const productImageNames = (await readdir(path.join(process.cwd(), "public", "images", "products")))
+    .filter((name) => /\.(jpg|jpeg|png|webp)$/i.test(name));
+  const productImages = productImageNames.map((name) => `/images/products/${name}`);
   return (
     <div className="max-w-3xl">
       <h1 className="font-heritage text-2xl mb-4">{p.nameEn} — Bilingual Content & SEO</h1>
@@ -21,12 +27,16 @@ export default async function ProductEditPage({ params }: { params: Promise<{ id
           <label className="text-xs">Category<select name="categoryId" defaultValue={p.categoryId} className="border rounded-lg px-2 py-1.5 w-full">
             {allCategories.map((category) => <option key={category.id} value={category.id}>{category.nameEn}</option>)}
           </select></label>
-          <label className="text-xs">Image path<input name="image" defaultValue={p.image ?? ""} className="border rounded-lg px-2 py-1.5 w-full" placeholder="/images/products/product01.jpeg" /></label>
+          <label className="text-xs">Product image<select name="image" defaultValue={p.image ?? ""} className="border rounded-lg px-2 py-1.5 w-full">
+            <option value="">Use default logo</option>
+            {productImages.map((image) => <option key={image} value={image}>{image.split("/").pop()}</option>)}
+          </select></label>
           <label className="text-xs">Weight label<input name="weightLabel" defaultValue={p.weightLabel} className="border rounded-lg px-2 py-1.5 w-full" /></label>
           <label className="text-xs">Price<input type="number" name="price" defaultValue={p.price} step="0.01" min="0" className="border rounded-lg px-2 py-1.5 w-full" /></label>
           <label className="text-xs">Old price<input type="number" name="oldPrice" defaultValue={p.oldPrice ?? ""} step="0.01" min="0" className="border rounded-lg px-2 py-1.5 w-full" /></label>
           <label className="text-xs">Wholesale price<input type="number" name="wholesalePrice" defaultValue={p.wholesalePrice ?? ""} step="0.01" min="0" className="border rounded-lg px-2 py-1.5 w-full" /></label>
         </div>
+        {p.image && <div className="relative h-32 w-32 overflow-hidden rounded-lg border"><Image src={p.image} alt={p.imageAltEn ?? p.nameEn} fill className="object-cover" sizes="128px" /></div>}
         <div className="flex flex-wrap gap-5 text-sm">
           <label className="flex items-center gap-2"><input type="checkbox" name="bestSeller" defaultChecked={!!p.bestSeller} /> Best seller</label>
           <label className="flex items-center gap-2"><input type="checkbox" name="newArrival" defaultChecked={!!p.newArrival} /> New arrival</label>
