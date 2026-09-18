@@ -5,10 +5,10 @@ import { Lang, t, SOCIAL_LINKS, PHONE_DISPLAY, BUSINESS_EMAIL } from "@/lib/cons
 export default function Footer({ lang }: { lang: Lang }) {
   const d = t(lang);
   return (
-    <footer className="bg-cinnamon text-cream mt-16">
-      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 mb-2">
+    <footer dir={lang === "ur" ? "rtl" : "ltr"} className="bg-cinnamon text-cream mt-16">
+      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 items-start">
+        <div className={`min-w-0 col-span-2 md:col-span-1 ${lang === "ur" ? "text-right" : "text-left"}`}>
+          <div className={`flex items-center gap-2 mb-2 ${lang === "ur" ? "justify-end" : "justify-start"}`}>
             <Image src="/images/logo.jpg" alt="Aura Foods" width={40} height={40} className="rounded-full" />
             <span className="font-heritage text-lg">Aura Foods</span>
           </div>
