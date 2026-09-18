@@ -179,3 +179,9 @@ CREATE TABLE IF NOT EXISTS settings (
   value TEXT NOT NULL
 );
 `);
+
+try {
+  sqlite.exec("ALTER TABLE products ADD COLUMN grammage_options TEXT");
+} catch {
+  // Column already exists in an initialized database.
+}

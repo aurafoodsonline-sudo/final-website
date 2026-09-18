@@ -28,6 +28,7 @@ export const products = sqliteTable("products", {
   usageEn: text("usage_en"),
   usageUr: text("usage_ur"),
   weightLabel: text("weight_label").notNull(),
+  grammageOptions: text("grammage_options"),
   price: real("price").notNull(),
   oldPrice: real("old_price"),
   image: text("image"),

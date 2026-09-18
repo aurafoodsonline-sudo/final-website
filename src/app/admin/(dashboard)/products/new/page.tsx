@@ -27,6 +27,7 @@ export default async function NewProductPage() {
               {imageNames.map((name) => <option key={name} value={`/images/products/${name}`}>{name}</option>)}
             </select>
             <input name="weightLabel" required placeholder="Weight label, e.g. 100g" className="border rounded-lg px-2 py-1.5" />
+            <input name="grammageOptions" placeholder="Grammage options: 50g, 100g, 200g" className="border rounded-lg px-2 py-1.5" />
             <input name="price" required type="number" min="0" step="0.01" placeholder="Price" className="border rounded-lg px-2 py-1.5" />
             <input name="oldPrice" type="number" min="0" step="0.01" placeholder="Old price" className="border rounded-lg px-2 py-1.5" />
             <input name="wholesalePrice" type="number" min="0" step="0.01" placeholder="Wholesale price" className="border rounded-lg px-2 py-1.5" />

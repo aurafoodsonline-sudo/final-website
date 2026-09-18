@@ -85,7 +85,7 @@ export async function createProduct(formData: FormData) {
     descriptionEn: String(formData.get("descriptionEn") ?? ""), descriptionUr: String(formData.get("descriptionUr") ?? ""),
     ingredientsEn: String(formData.get("ingredientsEn") ?? ""), ingredientsUr: String(formData.get("ingredientsUr") ?? ""),
     usageEn: String(formData.get("usageEn") ?? ""), usageUr: String(formData.get("usageUr") ?? ""),
-    weightLabel: String(formData.get("weightLabel")), price: Number(formData.get("price")),
+    weightLabel: String(formData.get("weightLabel")), grammageOptions: String(formData.get("grammageOptions") ?? ""), price: Number(formData.get("price")),
     oldPrice: formData.get("oldPrice") ? Number(formData.get("oldPrice")) : null,
     image: String(formData.get("image") ?? ""),
     bestSeller: formData.get("bestSeller") === "on" ? 1 : 0,
@@ -193,7 +193,7 @@ export async function updateProductContent(formData: FormData) {
   await db.update(products).set({
     slug: newSlug, sku: String(formData.get("sku")),
     categoryId: Number(formData.get("categoryId")), image,
-    weightLabel: String(formData.get("weightLabel")), price: Number(formData.get("price")),
+    weightLabel: String(formData.get("weightLabel")), grammageOptions: String(formData.get("grammageOptions") ?? ""), price: Number(formData.get("price")),
     oldPrice: formData.get("oldPrice") ? Number(formData.get("oldPrice")) : null,
     bestSeller: formData.get("bestSeller") === "on" ? 1 : 0,
     newArrival: formData.get("newArrival") === "on" ? 1 : 0,

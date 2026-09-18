@@ -26,6 +26,10 @@ export default async function ProductPage({ params }: { params: Promise<{ lang: 
   if (!p) return notFound();
   const reviews = await getApprovedReviews(p.id);
   const name = lang === "ur" ? p.nameUr : p.nameEn;
+  const grammageOptions = (p.grammageOptions ?? p.weightLabel)
+    .split(",")
+    .map((option: string) => option.trim())
+    .filter(Boolean);
   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
 
   const jsonLd = {
@@ -51,7 +55,12 @@ export default async function ProductPage({ params }: { params: Promise<{ lang: 
           <div className="flex items-center gap-3 mb-4">
             <span className="text-2xl font-semibold text-chili">Rs. {p.price}</span>
             {p.oldPrice ? <span className="line-through opacity-50">Rs. {p.oldPrice}</span> : null}
-            <span className="text-sm opacity-60">· {p.weightLabel}</span>
+            <label className="text-sm opacity-70 flex items-center gap-2">
+              <span>{lang === "ur" ? "وزن" : "Grammage"}</span>
+              <select defaultValue={grammageOptions[0]} className="border border-cinnamon/20 rounded-lg px-2 py-1 bg-white">
+                {grammageOptions.map((option: string) => <option key={option} value={option}>{option}</option>)}
+              </select>
+            </label>
           </div>
           {p.websiteStockStatus === "out_of_stock" ? (
             <p className="text-cinnamon font-medium mb-4">{d.out_of_stock}</p>

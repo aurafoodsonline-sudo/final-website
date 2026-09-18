@@ -33,6 +33,7 @@ export default async function ProductEditPage({ params }: { params: Promise<{ id
           </select></label>
           <label className="text-xs">Upload new image<input type="file" name="imageFile" accept="image/jpeg,image/png,image/webp" className="border rounded-lg px-2 py-1.5 w-full text-xs" /></label>
           <label className="text-xs">Weight label<input name="weightLabel" defaultValue={p.weightLabel} className="border rounded-lg px-2 py-1.5 w-full" /></label>
+          <label className="text-xs">Grammage options<input name="grammageOptions" defaultValue={p.grammageOptions ?? ""} className="border rounded-lg px-2 py-1.5 w-full" placeholder="50g, 100g, 200g, 500g" /></label>
           <label className="text-xs">Price<input type="number" name="price" defaultValue={p.price} step="0.01" min="0" className="border rounded-lg px-2 py-1.5 w-full" /></label>
           <label className="text-xs">Old price<input type="number" name="oldPrice" defaultValue={p.oldPrice ?? ""} step="0.01" min="0" className="border rounded-lg px-2 py-1.5 w-full" /></label>
           <label className="text-xs">Wholesale price<input type="number" name="wholesalePrice" defaultValue={p.wholesalePrice ?? ""} step="0.01" min="0" className="border rounded-lg px-2 py-1.5 w-full" /></label>
