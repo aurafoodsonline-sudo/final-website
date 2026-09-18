@@ -42,13 +42,13 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             sizes="100vw"
             className="absolute inset-0 h-full w-full object-contain"
           />
-          <div className="absolute inset-x-0 top-[7%] mx-auto max-w-xl px-4 text-center text-cinnamon">
-            <span className="inline-block text-xs uppercase tracking-wide bg-[#FBF3E7]/80 text-chili px-3 py-1 rounded-full mb-3">{d.hero_badge}</span>
-            <h1 className="font-heritage text-3xl md:text-5xl leading-tight drop-shadow-sm">{d.hero_title}</h1>
-            <p className="mt-3 text-base md:text-lg opacity-90 drop-shadow-sm">{d.hero_sub}</p>
-            <div className="mt-5 flex justify-center gap-3">
-              <Link href={`/${lang}/shop`} className="bg-chili text-white px-5 py-2.5 rounded-full font-medium shadow-md hover:opacity-90">{d.hero_cta}</Link>
-              <Link href={`/${lang}/about`} className="border border-cinnamon bg-[#FBF3E7]/75 px-5 py-2.5 rounded-full font-medium shadow-md hover:bg-[#FBF3E7]">{d.hero_cta2}</Link>
+          <div className="absolute inset-x-0 top-[16%] mx-auto max-w-2xl px-4 text-center text-cinnamon">
+            <span className="inline-block text-sm uppercase tracking-wide bg-[#FBF3E7]/80 text-chili px-4 py-1.5 rounded-full mb-5">{d.hero_badge}</span>
+            <h1 className="font-heritage text-5xl md:text-7xl leading-tight drop-shadow-sm">{d.hero_title}</h1>
+            <p className="mt-5 text-lg md:text-2xl opacity-90 drop-shadow-sm">{d.hero_sub}</p>
+            <div className="mt-7 flex justify-center gap-3">
+              <Link href={`/${lang}/shop`} className="bg-chili text-white px-6 py-3 rounded-full text-lg font-medium shadow-md hover:opacity-90">{d.hero_cta}</Link>
+              <Link href={`/${lang}/about`} className="border border-cinnamon bg-[#FBF3E7]/75 px-6 py-3 rounded-full text-lg font-medium shadow-md hover:bg-[#FBF3E7]">{d.hero_cta2}</Link>
             </div>
           </div>
         </div>
