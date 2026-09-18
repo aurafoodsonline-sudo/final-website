@@ -32,7 +32,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       <section
         className="relative overflow-hidden bg-[#FBF3E7]"
       >
-        <div className="relative mx-auto w-full max-w-6xl aspect-[1122/1402]">
+        <div className="relative mx-auto w-full max-w-6xl aspect-[1122/1402] overflow-hidden rounded-[2rem]">
           <Image
             src="/images/home-banner.jpg"
             alt="Aura Foods organic spices"
@@ -40,7 +40,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             height={1152}
             priority
             sizes="100vw"
-            className="absolute inset-0 h-full w-full object-contain"
+            className="hero-banner-fade absolute inset-0 h-full w-full object-contain"
           />
           <div className="absolute inset-x-0 top-[7%] md:top-[16%] mx-auto max-w-xl md:max-w-2xl px-4 text-center text-cinnamon">
             <span className="inline-block text-xs md:text-sm uppercase tracking-wide bg-[#FBF3E7]/80 text-cinnamon px-3 md:px-4 py-1 md:py-1.5 rounded-full mb-3 md:mb-5">{d.hero_badge}</span>

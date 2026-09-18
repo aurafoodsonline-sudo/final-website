@@ -17,3 +17,13 @@ body {
 [dir="rtl"] body {
   font-family: var(--font-ur-body);
 }
+
+.hero-banner-fade {
+  border-radius: 2rem;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 91%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 91%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
