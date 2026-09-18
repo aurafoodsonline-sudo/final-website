@@ -34,7 +34,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       >
         <div className="relative mx-auto w-full max-w-6xl aspect-[1122/1402]">
           <Image
-            src="/images/home-banner.jpg.jpeg"
+            src="/images/home-banner.jpg"
             alt="Aura Foods organic spices"
             width={1122}
             height={1402}
