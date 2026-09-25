@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-heritage: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+  --font-ur-heritage: "Noto Nastaliq Urdu", serif;
+  --font-ur-body: "Noto Naskh Arabic", serif;
+}
+
+body {
+  background: #FBF3E7;
+  color: #4A2C1D;
+  overflow-x: hidden;
+}
+
+[dir="rtl"] body {
+  font-family: var(--font-ur-body);
+}
+
+.hero-banner-fade {
+  border-radius: 2rem;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 91%, transparent 100%);
+}
