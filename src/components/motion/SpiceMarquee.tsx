@@ -28,12 +28,12 @@ export default function SpiceMarquee({ names, lang }: { names: string[]; lang: L
         ]}
         velocity={40}
         numCopies={4}
-        className={ur ? "font-urheritage" : "font-heritage italic"}
+        className={ur ? "font-urheritage" : "font-script"}
         scrollerStyle={{
-          fontSize: "clamp(1.6rem, 4.2vw, 3.6rem)",
-          lineHeight: ur ? 2.1 : 1.25,
-          fontWeight: 600,
-          letterSpacing: ur ? 0 : "-0.01em",
+          fontSize: ur ? "clamp(1.6rem, 4.2vw, 3.6rem)" : "clamp(2rem, 5vw, 4.4rem)",
+          lineHeight: ur ? 2.1 : 1.3,
+          fontWeight: ur ? 600 : 700,
+          letterSpacing: 0,
           textShadow: "none",
           filter: "none",
         }}

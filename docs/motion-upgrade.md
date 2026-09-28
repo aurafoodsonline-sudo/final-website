@@ -52,6 +52,14 @@ already animated.
 The automatic list is defined in two places that must stay in sync: `AUTO` in
 `src/components/motion/RevealManager.tsx` and the "Automatic mode" rule in `src/app/globals.css`.
 
+## Update — spice ribbon font and home-page bundles
+- The scrolling spice ribbon now uses a handwritten script font (Dancing Script, bold). Urdu keeps
+  Nastaliq, because the script font has no Urdu letters. The font ships with the site through
+  the `@fontsource/dancing-script` package (OFL licence), so it doesn't depend on Google Fonts.
+- A **Special Bundles** section now sits on the home page right after Best Sellers. It shows every
+  bundle that isn't hidden, animates like the product grids, and updates automatically when you
+  add, edit or delete bundles in Admin → Bundles. If there are no bundles, the section is hidden.
+
 ## Safety nets
 - Visitors whose phone or computer asks for **reduced motion** get the site with no animation
   and normal scrolling.

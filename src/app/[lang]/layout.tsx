@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "lenis/dist/lenis.css";
+// Handwritten font for the spice ribbon, bundled with the site (no Google Fonts dependency).
+import "@fontsource/dancing-script/700.css";
 import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";

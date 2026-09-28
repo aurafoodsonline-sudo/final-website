@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Lang, t, SOCIAL_LINKS } from "@/lib/constants";
-import { getAllProducts } from "@/lib/data";
+import { getAllProducts, getAllBundles } from "@/lib/data";
 import ProductCard from "@/components/ProductCard";
+import BundleCard from "@/components/BundleCard";
 import AnimatedTitle from "@/components/motion/AnimatedTitle";
 import HeroMotion from "@/components/motion/HeroMotion";
 import SpiceMarquee from "@/components/motion/SpiceMarquee";
@@ -32,6 +33,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
   const d = t(lang);
   const products = await getAllProducts();
+  const bundles = await getAllBundles();
   const bestSellers = products.filter((p) => p.bestSeller);
   const newArrivals = products.filter((p) => p.newArrival);
   const ur = lang === "ur";
@@ -113,6 +115,22 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <AnimatedTitle text={d.best_sellers} lang={lang} className="font-heritage text-3xl md:text-5xl" />
           </div>
           {grid(bestSellers)}
+        </section>
+      )}
+
+      {bundles.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 pt-6 pb-16 md:pb-24">
+          <div className="text-center mb-10">
+            <p data-reveal="fade" className="eyebrow justify-center mb-3">{ur ? "ایک ساتھ، زیادہ بچت" : "Better together"}</p>
+            <AnimatedTitle text={ur ? "خصوصی بنڈلز" : "Special Bundles"} lang={lang} className="font-heritage text-3xl md:text-5xl" />
+          </div>
+          <div data-reveal="stagger" className="flex flex-wrap justify-center gap-4 md:gap-5">
+            {bundles.map((b) => (
+              <div key={b.id} className="w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.84rem)]">
+                <BundleCard bundle={b} lang={lang} />
+              </div>
+            ))}
+          </div>
         </section>
       )}
 

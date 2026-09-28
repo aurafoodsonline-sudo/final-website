@@ -7,6 +7,7 @@
   --font-body: "Inter", sans-serif;
   --font-ur-heritage: "Noto Nastaliq Urdu", serif;
   --font-ur-body: "Noto Naskh Arabic", serif;
+  --font-script: "Dancing Script", "Brush Script MT", cursive;
 }
 
 body {

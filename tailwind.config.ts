@@ -30,6 +30,7 @@ const config: Config = {
       fontFamily: {
         heritage: ["var(--font-heritage)"],
         body: ["var(--font-body)"],
+        script: ["var(--font-script)"],
         urheritage: ["var(--font-ur-heritage)"],
         urbody: ["var(--font-ur-body)"],
       },
