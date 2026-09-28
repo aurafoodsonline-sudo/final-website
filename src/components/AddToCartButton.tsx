@@ -25,7 +25,7 @@ export default function AddToCartButton({ product, label, addedLabel, size = "md
           setAdded(true);
           setTimeout(() => setAdded(false), 1500);
         }}
-        className={`bg-chili text-white rounded-full font-medium hover:opacity-90 ${sizeClass}`}
+        className={`relative overflow-hidden bg-chili text-white rounded-full font-medium transition-[transform,box-shadow,background-color] duration-300 hover:shadow-[0_8px_20px_-8px_rgba(193,68,14,0.8)] active:scale-95 ${added ? "bg-cardamom" : ""} ${sizeClass}`}
       >
         {added ? addedLabel : label}
       </button>

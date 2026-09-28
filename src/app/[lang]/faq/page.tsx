@@ -14,15 +14,15 @@ export default async function FaqPage({ params }: { params: Promise<{ lang: stri
   const d = t(lang);
   return (
     <main className="max-w-3xl mx-auto px-4 py-14">
-      <p className="text-xs uppercase tracking-wide text-chili mb-2 text-center">{d.faq_badge}</p>
-      <h1 className="font-heritage text-3xl mb-2 text-center">{d.faq_title}</h1>
-      <p className="opacity-70 text-center mb-10">{d.faq_sub}</p>
-      <div className="space-y-3">
+      <p data-reveal="fade" className="text-xs uppercase tracking-wide text-chili mb-2 text-center">{d.faq_badge}</p>
+      <h1 data-reveal="up" className="font-heritage text-3xl md:text-4xl mb-2 text-center">{d.faq_title}</h1>
+      <p data-reveal="fade" className="opacity-70 text-center mb-10">{d.faq_sub}</p>
+      <div data-reveal="stagger" className="space-y-3">
         {FAQS.map((f, i) => {
           const [q, a] = lang === "ur" ? f.ur : f.en;
           return (
-            <details key={i} className="bg-white/70 rounded-xl p-4">
-              <summary className="font-semibold cursor-pointer">{q}</summary>
+            <details key={i} className="group bg-white/70 rounded-xl p-4 border border-transparent transition-colors duration-300 open:border-turmeric/40 hover:border-cinnamon/15">
+              <summary className="font-semibold cursor-pointer flex items-center justify-between gap-3 list-none [&::-webkit-details-marker]:hidden">{q}<span aria-hidden="true" className="text-chili text-xl leading-none transition-transform duration-300 group-open:rotate-45">+</span></summary>
               <p className="text-sm opacity-80 mt-2">{a}</p>
             </details>
           );

@@ -1,5 +1,14 @@
 import { Lang, t } from "@/lib/constants";
 import AboutCarousel from "@/components/AboutCarousel";
+import AnimatedTitle from "@/components/motion/AnimatedTitle";
+import CountUp from "@/components/reactbits/CountUp";
+import SpotlightCard from "@/components/reactbits/SpotlightCard";
+
+const STATS = [
+  { to: 8, suffix: "+", key: "stat_products" },
+  { to: 50, suffix: "+", key: "stat_farms" },
+  { to: 100, suffix: "%", key: "stat_promise" },
+] as const;
 
 const VALUES = [
   { en: ["100% Organic", "Sourced from trusted Pakistani farms without synthetic chemicals."], ur: ["100% آرگینک", "قابلِ اعتماد پاکستانی کھیتوں سے، کیمیکل سے پاک۔"] },
@@ -13,33 +22,38 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
   const d = t(lang);
   return (
     <main className="max-w-5xl mx-auto px-4 py-14">
-      <p className="text-xs uppercase tracking-wide text-chili mb-2">{d.about_title}</p>
-      <h1 className="font-heritage text-4xl mb-3">{d.about_sub}</h1>
-      <p className="opacity-80 max-w-2xl mb-10">{d.about_lead}</p>
+      <p data-reveal="fade" className="eyebrow mb-3">{d.about_title}</p>
+      <AnimatedTitle tag="h1" text={d.about_sub} lang={lang} align="start" className={`font-heritage text-4xl md:text-5xl mb-4 ${lang === "ur" ? "leading-[1.9]" : ""}`} />
+      <p data-reveal="up" data-reveal-delay="0.2" className="opacity-80 max-w-2xl mb-12">{d.about_lead}</p>
 
       <div className="grid md:grid-cols-2 gap-10 items-center mb-14">
-        <AboutCarousel />
+        <div data-reveal="clip"><AboutCarousel /></div>
         <div>
-          <h2 className="font-heritage text-2xl mb-2">{d.about_h2}</h2>
-          <p className="opacity-80">{d.about_h2_body}</p>
-          <div className="grid grid-cols-3 gap-4 mt-8 text-center">
-            <div><p className="text-2xl font-heritage text-chili">8+</p><p className="text-xs opacity-70">{d.stat_products}</p></div>
-            <div><p className="text-2xl font-heritage text-chili">50+</p><p className="text-xs opacity-70">{d.stat_farms}</p></div>
-            <div><p className="text-2xl font-heritage text-chili">100%</p><p className="text-xs opacity-70">{d.stat_promise}</p></div>
+          <h2 data-reveal="up" className="font-heritage text-2xl md:text-3xl mb-3">{d.about_h2}</h2>
+          <p data-reveal="up" data-reveal-delay="0.1" className="opacity-80">{d.about_h2_body}</p>
+          <div data-reveal="stagger" className="grid grid-cols-3 gap-4 mt-8 text-center">
+            {STATS.map((st) => (
+              <div key={st.key} className="rounded-2xl bg-white/70 px-2 py-4 border border-cinnamon/10">
+                <p className="text-3xl md:text-4xl font-heritage text-chili" aria-label={`${st.to}${st.suffix}`}>
+                  <CountUp to={st.to} duration={2.2} />{st.suffix}
+                </p>
+                <p className="text-xs opacity-70 mt-1">{d[st.key]}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <h2 className="font-heritage text-2xl text-center mb-2">{d.our_values}</h2>
-      <p className="text-center opacity-70 mb-8">{d.what_we_stand_for}</p>
-      <div className="grid md:grid-cols-3 gap-6">
+      <AnimatedTitle text={d.our_values} lang={lang} className="block font-heritage text-3xl md:text-4xl mb-2 w-full" />
+      <p data-reveal="fade" className="text-center opacity-70 mb-10">{d.what_we_stand_for}</p>
+      <div data-reveal="stagger" className="grid md:grid-cols-3 gap-6">
         {VALUES.map((v, i) => {
           const [title, desc] = lang === "ur" ? v.ur : v.en;
           return (
-            <div key={i} className="bg-white/70 rounded-2xl p-5 text-center">
+            <SpotlightCard key={i} spotlightColor="rgba(232, 163, 61, 0.30)" className="h-full rounded-2xl border border-cinnamon/10 bg-white/75 p-6 text-center transition-transform duration-500 hover:-translate-y-1">
               <h3 className="font-semibold text-chili mb-1">{title}</h3>
               <p className="text-sm opacity-80">{desc}</p>
-            </div>
+            </SpotlightCard>
           );
         })}
       </div>

@@ -1,7 +1,17 @@
 import type { Metadata } from "next";
+import "lenis/dist/lenis.css";
 import "../globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SmoothScroll from "@/components/motion/SmoothScroll";
+import ScrollProgress from "@/components/motion/ScrollProgress";
+import RevealManager from "@/components/motion/RevealManager";
+import MotionProviders from "@/components/motion/MotionProviders";
+
+// Hides [data-reveal] elements before first paint so they can animate in. It only applies
+// when the visitor allows motion, and un-hides everything if the animation code hasn't
+// started after 4 seconds (slow network, script blocked), so content is never lost.
+const MOTION_BOOT = `(function(){try{var d=document.documentElement;if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('motion-ok');setTimeout(function(){if(!window.__auraReveal)d.classList.remove('motion-ok')},4000)}}catch(e){}})();`;
 import { Lang, t } from "@/lib/constants";
 import { SITE_URL, SOCIAL_LINKS, BUSINESS_EMAIL, PHONE_DISPLAY, BUSINESS_CITY } from "@/lib/constants";
 
@@ -62,8 +72,9 @@ export default async function LangLayout({ children, params }: { children: React
   };
 
   return (
-    <html lang={l} dir={dict.dir}>
+    <html lang={l} dir={dict.dir} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: MOTION_BOOT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -80,9 +91,14 @@ export default async function LangLayout({ children, params }: { children: React
           />
         )}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-        <Header lang={l} />
-        {children}
-        <Footer lang={l} />
+        <MotionProviders>
+          <SmoothScroll />
+          <ScrollProgress />
+          <RevealManager />
+          <Header lang={l} />
+          {children}
+          <Footer lang={l} />
+        </MotionProviders>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 import { Lang, t } from "@/lib/constants";
 import { getAllProducts, getAllBundles, getCategories } from "@/lib/data";
 import ShopCatalog from "@/components/ShopCatalog";
+import AnimatedTitle from "@/components/motion/AnimatedTitle";
 
 export default async function ShopPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
@@ -12,7 +13,7 @@ export default async function ShopPage({ params }: { params: Promise<{ lang: str
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="font-heritage text-3xl mb-2">{d.nav_shop}</h1>
+      <AnimatedTitle tag="h1" text={d.nav_shop} lang={lang} align="start" className="font-heritage text-4xl md:text-5xl mb-8" />
       <ShopCatalog products={products} bundles={bundles} categories={categories} lang={lang} />
     </main>
   );

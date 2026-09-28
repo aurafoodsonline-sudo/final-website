@@ -20,13 +20,13 @@ export default function ShopCatalog({ products, bundles, categories, lang }: Sho
 
   return (
     <div className={`flex flex-col gap-8 md:flex-row ${lang === "ur" ? "md:flex-row-reverse" : ""}`}>
-      <aside className="w-full shrink-0 md:w-56 md:sticky md:top-24 md:self-start">
+      <aside data-reveal="up" className="w-full shrink-0 md:w-56 md:sticky md:top-24 md:self-start">
         <h2 className="font-semibold mb-3">{lang === "ur" ? "زمرے" : "Categories"}</h2>
         <div className="flex gap-2 flex-wrap text-sm md:flex-col md:items-stretch">
           <button
             type="button"
             onClick={() => setSelectedCategory(null)}
-            className={`text-left border rounded-full px-3 py-2 md:rounded-lg ${selectedCategory === null ? "bg-cinnamon text-cream" : "border-cinnamon/20"}`}
+            className={`text-left border rounded-full px-3 py-2 md:rounded-lg transition-all duration-300 hover:border-chili/50 active:scale-95 ${selectedCategory === null ? "bg-cinnamon text-cream" : "border-cinnamon/20"}`}
           >
             {lang === "ur" ? "تمام مصنوعات" : "All products"}
           </button>
@@ -37,7 +37,7 @@ export default function ShopCatalog({ products, bundles, categories, lang }: Sho
                 key={category.id}
                 type="button"
                 onClick={() => setSelectedCategory(category.id)}
-                className={`text-left border rounded-full px-3 py-2 md:rounded-lg ${isSelected ? "bg-cinnamon text-cream" : "border-cinnamon/20"}`}
+                className={`text-left border rounded-full px-3 py-2 md:rounded-lg transition-all duration-300 hover:border-chili/50 active:scale-95 ${isSelected ? "bg-cinnamon text-cream" : "border-cinnamon/20"}`}
               >
                 {lang === "ur" ? category.nameUr : category.nameEn}
               </button>
@@ -46,9 +46,9 @@ export default function ShopCatalog({ products, bundles, categories, lang }: Sho
         </div>
       </aside>
       <div className="min-w-0 flex-1">
-        {selectedCategory === null && bundles.length > 0 && <section className="mb-8"><h2 className="font-heritage text-2xl mb-3">{lang === "ur" ? "خصوصی بنڈلز" : "Special bundles"}</h2><div className="grid grid-cols-2 md:grid-cols-3 gap-5">{bundles.map((bundle) => <BundleCard key={bundle.id} bundle={bundle} lang={lang} />)}</div></section>}
+        {selectedCategory === null && bundles.length > 0 && <section className="mb-8"><h2 className="font-heritage text-2xl mb-3">{lang === "ur" ? "خصوصی بنڈلز" : "Special bundles"}</h2><div data-reveal="stagger" className="grid grid-cols-2 md:grid-cols-3 gap-5">{bundles.map((bundle) => <BundleCard key={bundle.id} bundle={bundle} lang={lang} />)}</div></section>}
         {visibleProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+          <div data-reveal="stagger" className="grid grid-cols-2 md:grid-cols-3 gap-5">
             {visibleProducts.map((product) => <ProductCard key={product.id} p={product} lang={lang} />)}
           </div>
         ) : (

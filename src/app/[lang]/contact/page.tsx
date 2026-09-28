@@ -8,8 +8,8 @@ export default async function ContactPage({ params, searchParams }: { params: Pr
   return (
     <main className="max-w-5xl mx-auto px-4 py-14 grid md:grid-cols-2 gap-10">
       <div>
-        <p className="text-xs uppercase tracking-wide text-chili mb-2">{d.contact_title}</p>
-        <h1 className="font-heritage text-3xl mb-3">{d.contact_sub}</h1>
+        <p data-reveal="fade" className="text-xs uppercase tracking-wide text-chili mb-2">{d.contact_title}</p>
+        <h1 data-reveal="up" className="font-heritage text-3xl md:text-4xl mb-3">{d.contact_sub}</h1>
         <p className="opacity-80 mb-6">{d.contact_lead}</p>
         <h2 className="font-semibold mb-2">{d.reach_out}</h2>
         <p className="text-sm opacity-70 mb-4">{d.contact_note}</p>
@@ -20,7 +20,7 @@ export default async function ContactPage({ params, searchParams }: { params: Pr
         </ul>
         <a href={SOCIAL_LINKS.whatsapp} className="inline-block mt-5 bg-cardamom text-white px-5 py-2 rounded-full">{d.chat_whatsapp}</a>
       </div>
-      <form action="/api/contact" method="post" className="grid gap-3 self-start bg-white/70 rounded-2xl p-6">
+      <form data-reveal="zoom" action="/api/contact" method="post" className="grid gap-3 self-start bg-white/70 rounded-2xl p-6 shadow-[0_24px_50px_-35px_rgba(74,44,29,0.6)]">
         {sent ? <p role="status" className="rounded-lg bg-cardamom/15 text-cardamom px-3 py-2 text-sm">{lang === "ur" ? "شکریہ! آپ کا پیغام موصول ہو گیا ہے۔ ہم عام طور پر 24 گھنٹوں میں جواب دیتے ہیں۔" : "Thank you! Your message has been received. We usually reply within 24 hours."}</p> : null}
         <input name="name" placeholder={d.full_name} required className="border rounded-lg px-3 py-2" />
         <input name="email" type="email" placeholder={d.email} required className="border rounded-lg px-3 py-2" />

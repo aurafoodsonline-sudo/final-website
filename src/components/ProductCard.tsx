@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Lang, t } from "@/lib/constants";
 import AddToCartButton from "./AddToCartButton";
+import SpotlightCard from "./reactbits/SpotlightCard";
 import { parseGrammageOptions } from "@/lib/grammage";
 
 export default function ProductCard({ p, lang }: { p: any; lang: Lang }) {
@@ -16,13 +17,17 @@ export default function ProductCard({ p, lang }: { p: any; lang: Lang }) {
     p.websiteStockStatus === "out_of_stock" ? d.out_of_stock :
     p.websiteStockStatus === "limited" ? d.limited_stock : null;
   return (
-    <Link href={`/${lang}/product/${p.slug}`} className="group block rounded-2xl bg-white/70 border border-cinnamon/10 overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="relative aspect-square bg-cream">
-        <Image src={image} unoptimized={image.startsWith("/uploads/")} alt={alt} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
+    <Link href={`/${lang}/product/${p.slug}`} className="group block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-chili">
+      <SpotlightCard
+        spotlightColor="rgba(232, 163, 61, 0.28)"
+        className="h-full rounded-2xl border border-cinnamon/10 bg-white/75 transition-[transform,box-shadow] duration-500 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_22px_45px_-22px_rgba(74,44,29,0.55)]"
+      >
+      <div className="relative aspect-square overflow-hidden bg-cream">
+        <Image src={image} unoptimized={image.startsWith("/uploads/")} alt={alt} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" />
         {p.bestSeller ? <span className="absolute top-2 left-2 bg-chili text-white text-xs px-2 py-1 rounded-full">{d.best_sellers}</span> : null}
         {stockBadge ? <span className="absolute top-2 right-2 bg-cinnamon text-white text-xs px-2 py-1 rounded-full">{stockBadge}</span> : null}
       </div>
-      <div className="p-4">
+      <div className="relative p-4">
         <h3 className="font-heritage text-lg leading-snug">{name}</h3>
         <p className="text-sm opacity-70 mt-1">{tagline}</p>
         <div className="mt-2 flex flex-wrap items-center gap-x-2">
@@ -41,6 +46,7 @@ export default function ProductCard({ p, lang }: { p: any; lang: Lang }) {
           </div>
         )}
       </div>
+      </SpotlightCard>
     </Link>
   );
 }

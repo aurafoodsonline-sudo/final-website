@@ -55,12 +55,12 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
     <main className="max-w-5xl mx-auto px-4 py-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="grid md:grid-cols-2 gap-10">
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-white">
+        <div data-reveal="clip" className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-[0_30px_60px_-35px_rgba(74,44,29,0.6)]">
           <Image src={image} unoptimized={image.startsWith("/uploads/")} alt={alt} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
         </div>
         <div>
-          <h1 className="font-heritage text-3xl mb-1">{name}</h1>
-          <p className="opacity-70 mb-4">{lang === "ur" ? p.taglineUr : p.taglineEn}</p>
+          <h1 data-reveal="up" className="font-heritage text-3xl md:text-4xl mb-1">{name}</h1>
+          <p data-reveal="up" data-reveal-delay="0.1" className="opacity-70 mb-4">{lang === "ur" ? p.taglineUr : p.taglineEn}</p>
           {p.websiteStockStatus === "limited" ? <p className="text-sm text-chili font-medium mb-3">{d.limited_stock}</p> : null}
           {p.websiteStockStatus === "out_of_stock" ? (
             <div className="mb-6">
@@ -68,7 +68,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
               <p className="text-cinnamon font-medium">{d.out_of_stock}</p>
             </div>
           ) : (
-            <div className="mb-6">
+            <div data-reveal="up" data-reveal-delay="0.2" className="mb-6">
               <ProductPurchase
                 options={grammageOptions}
                 product={{ id: p.id, slug: p.slug, name, image }}
@@ -79,7 +79,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
               />
             </div>
           )}
-          <p className="leading-relaxed">{lang === "ur" ? p.descriptionUr : p.descriptionEn}</p>
+          <p data-reveal="up" className="leading-relaxed">{lang === "ur" ? p.descriptionUr : p.descriptionEn}</p>
           <h3 className="font-semibold mt-5 mb-1">{lang === "ur" ? "اجزاء" : "Ingredients"}</h3>
           <p className="text-sm opacity-80">{lang === "ur" ? p.ingredientsUr : p.ingredientsEn}</p>
           <h3 className="font-semibold mt-4 mb-1">{lang === "ur" ? "استعمال" : "Usage"}</h3>
@@ -87,7 +87,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
         </div>
       </div>
 
-      <section id="reviews" className="mt-14 scroll-mt-24">
+      <section id="reviews" data-reveal="up" className="mt-14 scroll-mt-24">
         <h2 className="font-heritage text-2xl mb-4">{d.reviews} {avgRating ? `(${avgRating} ★ · ${reviews.length})` : ""}</h2>
         <div className="space-y-4 mb-8">
           {reviews.length === 0 && <p className="opacity-60 text-sm">{lang === "ur" ? "ابھی کوئی تجربہ نہیں۔" : "No reviews yet."}</p>}

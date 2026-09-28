@@ -11,21 +11,21 @@ export default async function WholesalePage({ params }: { params: Promise<{ lang
   const products = (await getAllProducts()).filter((p) => p.wholesaleEligible);
   return (
     <main className="max-w-6xl mx-auto px-4 py-14">
-      <p className="text-xs uppercase tracking-wide text-chili mb-2 text-center">{d.wholesale_badge}</p>
-      <h1 className="font-heritage text-3xl mb-3 text-center">{d.wholesale_title}</h1>
-      <div className="text-center mb-10">
+      <p data-reveal="fade" className="text-xs uppercase tracking-wide text-chili mb-2 text-center">{d.wholesale_badge}</p>
+      <h1 data-reveal="up" className="font-heritage text-3xl md:text-4xl mb-3 text-center">{d.wholesale_title}</h1>
+      <div data-reveal="zoom" className="text-center mb-10">
         <a href={SOCIAL_LINKS.whatsapp} className="inline-block bg-cardamom text-white px-6 py-3 rounded-full font-medium">{d.wholesale_cta}</a>
       </div>
-      <h2 className="font-heritage text-2xl mb-2">{d.wholesale_catalog}</h2>
+      <h2 data-reveal="up" className="font-heritage text-2xl mb-2">{d.wholesale_catalog}</h2>
       <p className="opacity-70 text-sm mb-6">{d.wholesale_note}</p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+      <div data-reveal="stagger" className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {products.map((p) => {
           const name = lang === "ur" ? p.nameUr : p.nameEn;
           const image = p.image || "/images/logo.jpg";
           const available = p.websiteStockStatus !== "out_of_stock" && !!p.wholesalePrice;
           return (
-            <div key={p.id} className="rounded-2xl bg-white/70 border border-cinnamon/10 overflow-hidden">
-              <div className="relative aspect-square"><Image src={image} unoptimized={image.startsWith("/uploads/")} alt={name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" /></div>
+            <div key={p.id} className="group rounded-2xl bg-white/70 border border-cinnamon/10 overflow-hidden transition-[transform,box-shadow] duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_45px_-22px_rgba(74,44,29,0.55)]">
+              <div className="relative aspect-square overflow-hidden"><Image src={image} unoptimized={image.startsWith("/uploads/")} alt={name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.07]" /></div>
               <div className="p-4">
                 <h3 className="font-heritage text-base">{name}</h3>
                 <p className="text-sm opacity-70">1kg — {p.wholesalePrice ? `Rs. ${p.wholesalePrice}` : (lang === "ur" ? "قیمت کے لیے واٹس ایپ کریں" : "Ask on WhatsApp")}</p>
