@@ -1,16 +1,35 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Lang, t, SOCIAL_LINKS, PHONE_DISPLAY, BUSINESS_EMAIL } from "@/lib/constants";
+import type { IconType } from "react-icons";
+import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp, FaYoutube, FaBagShopping } from "react-icons/fa6";
+import { getT, getSiteInfo, getPage } from "@/lib/site";
+import { Lang } from "@/lib/constants";
 
-export default function Footer({ lang }: { lang: Lang }) {
-  const d = t(lang);
+const POLICY_SLUGS = ["privacy-policy", "return-policy", "shipping-policy", "terms"];
+
+export default async function Footer({ lang }: { lang: Lang }) {
+  const d = await getT(lang);
+  const site = await getSiteInfo();
+  const ur = lang === "ur";
+  const policies = (await Promise.all(POLICY_SLUGS.map((slug) => getPage(slug)))).filter((p) => p !== null);
+
+  // Social links come from Admin → Settings; an empty link hides its icon.
+  const socials: { href: string; label: string; Icon: IconType }[] = [
+    { href: site.social.facebook, label: "Facebook", Icon: FaFacebookF },
+    { href: site.social.instagram, label: "Instagram", Icon: FaInstagram },
+    { href: site.social.tiktok, label: "TikTok", Icon: FaTiktok },
+    { href: site.whatsappUrl, label: "WhatsApp", Icon: FaWhatsapp },
+    { href: site.social.youtube, label: "YouTube", Icon: FaYoutube },
+    { href: site.social.daraz, label: "Daraz", Icon: FaBagShopping },
+  ].filter((s) => s.href);
+
   return (
-    <footer dir={lang === "ur" ? "rtl" : "ltr"} className="bg-cinnamon text-cream mt-16">
+    <footer dir={ur ? "rtl" : "ltr"} className="bg-cinnamon text-cream mt-16">
       <div data-reveal="stagger" className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 items-start">
-        <div className={`min-w-0 col-span-2 md:col-span-1 ${lang === "ur" ? "text-right" : "text-left"}`}>
-          <div className={`flex items-center gap-2 mb-2 ${lang === "ur" ? "justify-end" : "justify-start"}`}>
-            <Image src="/images/logo.jpg" alt="Aura Foods" width={40} height={40} className="rounded-full" />
-            <span className="font-heritage text-lg">Aura Foods</span>
+        <div className={`min-w-0 col-span-2 md:col-span-1 ${ur ? "text-right" : "text-left"}`}>
+          <div className={`flex items-center gap-2 mb-2 ${ur ? "justify-end" : "justify-start"}`}>
+            <Image src="/images/logo.jpg" alt={site.siteName} width={40} height={40} className="rounded-full" />
+            <span className="font-heritage text-lg">{site.siteName}</span>
           </div>
           <p className="text-sm opacity-80">{d.footer_tagline}</p>
         </div>
@@ -28,28 +47,38 @@ export default function Footer({ lang }: { lang: Lang }) {
         <div className="min-w-0">
           <h4 className="font-semibold mb-2">{d.footer_contact}</h4>
           <ul className="text-sm space-y-1 opacity-90 break-words">
-            <li>{d.footer_phone}: {PHONE_DISPLAY}</li>
-            <li>{d.footer_email}: {BUSINESS_EMAIL}</li>
-            <li><a href={SOCIAL_LINKS.whatsapp} className="underline">{d.order_whatsapp}</a></li>
+            {site.phone ? <li>{d.footer_phone}: <a href={`tel:${site.phone.replace(/[^\d+]/g, "")}`} dir="ltr">{site.phone}</a></li> : null}
+            {site.email ? <li>{d.footer_email}: <a href={`mailto:${site.email}`}>{site.email}</a></li> : null}
+            {site.address ? <li>{d.address}: {site.address}</li> : null}
           </ul>
         </div>
         <div className="min-w-0">
-          <h4 className="font-semibold mb-2">{d.footer_follow}</h4>
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm opacity-90">
-            <a href={SOCIAL_LINKS.facebook}>Facebook</a>
-            <a href={SOCIAL_LINKS.instagram}>Instagram</a>
-            <a href={SOCIAL_LINKS.tiktok}>TikTok</a>
-          </div>
+          <h4 className="font-semibold mb-3">{d.footer_follow}</h4>
+          <ul className="flex flex-wrap gap-2.5">
+            {socials.map(({ href, label, Icon }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  title={label}
+                  className="grid place-items-center w-10 h-10 rounded-full bg-cream/10 text-cream ring-1 ring-cream/20 transition-[background-color,color,transform] duration-300 hover:bg-turmeric hover:text-cinnamon hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-turmeric"
+                >
+                  <Icon aria-hidden="true" className="w-[18px] h-[18px]" />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-4 pb-4 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs opacity-80">
-        <Link href={`/${lang}/policy/privacy-policy`}>{lang === "ur" ? "پرائیویسی پالیسی" : "Privacy Policy"}</Link>
-        <Link href={`/${lang}/policy/return-policy`}>{lang === "ur" ? "واپسی کی پالیسی" : "Return & Refund Policy"}</Link>
-        <Link href={`/${lang}/policy/shipping-policy`}>{lang === "ur" ? "شپنگ پالیسی" : "Shipping Policy"}</Link>
-        <Link href={`/${lang}/policy/terms`}>{lang === "ur" ? "شرائط و ضوابط" : "Terms & Conditions"}</Link>
+        {policies.map((p) => (
+          <Link key={p.slug} href={`/${lang}/policy/${p.slug}`}>{ur ? p.titleUr : p.titleEn}</Link>
+        ))}
       </div>
       <div className="text-center text-xs opacity-70 py-4 border-t border-cream/10">
-        © {new Date().getFullYear()} Aura Foods. {d.footer_rights}
+        © {new Date().getFullYear()} {site.siteName}. {d.footer_rights}
       </div>
     </footer>
   );

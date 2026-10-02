@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/components/SiteProvider";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,7 +14,7 @@ export default function Header({ lang }: { lang: Lang }) {
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
-  const d = t(lang);
+  const d = useT(lang);
   const other = lang === "en" ? "ur" : "en";
   const pathname = usePathname() ?? `/${lang}`;
   // Switch language but stay on the same page (e.g. /en/shop -> /ur/shop).

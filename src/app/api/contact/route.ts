@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPublicOrigin, getRefererPath } from "@/lib/request-origin";
+import { saveMessage } from "@/lib/messages";
 
+// Saves the form in the database (Admin → Messages) and returns the visitor to the form.
 export async function POST(req: NextRequest) {
-  // Messages are logged on the server for now (no email service is connected yet).
   const fd = await req.formData();
-  console.log("Contact form submission:", Object.fromEntries(fd));
+  const ok = await saveMessage("contact", fd);
   const destination = getRefererPath(req, "/en/contact");
-  return NextResponse.redirect(new URL(`${destination}?sent=1`, getPublicOrigin(req)), 303);
+  return NextResponse.redirect(new URL(`${destination}?${ok ? "sent=1" : "error=1"}`, getPublicOrigin(req)), 303);
 }

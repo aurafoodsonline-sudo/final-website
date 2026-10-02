@@ -3,6 +3,7 @@ import { products, bundles } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { parseGrammageOptions } from "@/lib/grammage";
 import NewOrderForm from "./NewOrderForm";
+import { getDeliveryRates } from "@/lib/data";
 
 export default async function NewOrderPage() {
   const all = await db.select().from(products);
@@ -14,11 +15,12 @@ export default async function NewOrderPage() {
     })).concat(p.wholesalePrice ? [{ key: `product:${p.id}:wholesale`, id: p.id, name: `${p.nameEn} (1kg Wholesale)`, price: p.wholesalePrice, type: "product" as const }] : [])
   );
   const bundleChoices = allBundles.map((b) => ({ key: `bundle:${b.id}`, id: b.id, name: b.nameEn, price: b.price, type: "bundle" as const }));
+  const { deliveryCharge } = await getDeliveryRates();
   return (
     <div>
       <h1 className="font-heritage text-2xl mb-1">New Manual Order</h1>
       <p className="text-sm opacity-70 mb-4">For orders received on Facebook, Instagram, WhatsApp, phone or in person. They appear in Orders and the Dashboard just like website orders.</p>
-      <NewOrderForm products={productChoices} bundles={bundleChoices} />
+      <NewOrderForm products={productChoices} bundles={bundleChoices} defaultDeliveryCharge={deliveryCharge} />
     </div>
   );
 }

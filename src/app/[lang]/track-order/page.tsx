@@ -1,10 +1,11 @@
+import { getT } from "@/lib/site";
 import { Lang, t } from "@/lib/constants";
 import TrackOrderForm from "@/components/TrackOrderForm";
 
 export default async function TrackOrderPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
-  const d = t(lang);
+  const d = await getT(lang);
   return (
     <main className="max-w-md mx-auto px-4 py-14 text-center">
       <p className="text-xs uppercase tracking-wide text-chili mb-2">{d.track_badge}</p>

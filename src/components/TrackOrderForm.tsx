@@ -1,7 +1,8 @@
 "use client";
+import { useT, useSite } from "@/components/SiteProvider";
 
 import { FormEvent, useState } from "react";
-import { Lang, t, SOCIAL_LINKS } from "@/lib/constants";
+import { Lang } from "@/lib/constants";
 
 interface TrackResult {
   orderNumber: string;
@@ -13,7 +14,7 @@ interface TrackResult {
 }
 
 export default function TrackOrderForm({ lang }: { lang: Lang }) {
-  const d = t(lang);
+  const d = useT(lang);
   const [result, setResult] = useState<TrackResult | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,8 @@ export default function TrackOrderForm({ lang }: { lang: Lang }) {
 
   const statuses = ["pending", "confirmed", "delivered"];
   const currentIndex = result ? Math.max(statuses.indexOf(result.orderStatus), 0) : -1;
-  const chatUrl = `${SOCIAL_LINKS.whatsapp}?text=${encodeURIComponent(`Assalam-o-Alaikum Aura Foods, Order ${result?.orderNumber ?? ""} ke bare me pochna tha`)}`;
+  const site = useSite();
+  const chatUrl = `${site?.whatsappUrl || "https://wa.me/"}?text=${encodeURIComponent(`Assalam-o-Alaikum Aura Foods, Order ${result?.orderNumber ?? ""} ke bare me pochna tha`)}`;
 
   return (
     <div className="grid gap-6 text-left">

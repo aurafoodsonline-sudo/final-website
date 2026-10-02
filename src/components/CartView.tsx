@@ -1,15 +1,18 @@
 "use client";
+import { useT } from "@/components/SiteProvider";
 import { useEffect, useState } from "react";
 import { CartItem, cartKey, getCart, removeFromCart, updateCartQty } from "@/lib/cart";
 import { deliveryChargeFor } from "@/lib/pricing";
+import { useDeliveryRates } from "@/lib/use-delivery-rates";
 import Image from "next/image";
 import Link from "next/link";
 import { Lang, t } from "@/lib/constants";
 
 export default function CartView({ lang }: { lang: Lang }) {
-  const d = t(lang);
+  const d = useT(lang);
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const { rates, ready } = useDeliveryRates();
 
   useEffect(() => {
     setItems(getCart());
@@ -20,9 +23,9 @@ export default function CartView({ lang }: { lang: Lang }) {
   }, []);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const delivery = deliveryChargeFor(subtotal);
+  const delivery = deliveryChargeFor(subtotal, rates);
 
-  if (!loaded) return null;
+  if (!loaded || !ready) return null;
 
   if (items.length === 0) {
     return (

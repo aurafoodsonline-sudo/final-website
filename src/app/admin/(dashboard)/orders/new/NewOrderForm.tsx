@@ -7,13 +7,13 @@ type Line = CatalogItem & { qty: number };
 
 const SOURCES = ["facebook", "instagram", "tiktok", "whatsapp", "phone", "offline", "website", "other"];
 
-export default function NewOrderForm({ products, bundles }: { products: CatalogItem[]; bundles: CatalogItem[] }) {
+export default function NewOrderForm({ products, bundles, defaultDeliveryCharge }: { products: CatalogItem[]; bundles: CatalogItem[]; defaultDeliveryCharge: number }) {
   const router = useRouter();
   const catalog = [...products, ...bundles];
   const [lines, setLines] = useState<Line[]>(catalog[0] ? [{ ...catalog[0], qty: 1 }] : []);
   const [source, setSource] = useState("facebook");
   const [discount, setDiscount] = useState(0);
-  const [deliveryCharges, setDeliveryCharges] = useState(150);
+  const [deliveryCharges, setDeliveryCharges] = useState(defaultDeliveryCharge);
   const [paymentStatus, setPaymentStatus] = useState("pending");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");

@@ -1,10 +1,13 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import { pgTable, text, integer, doublePrecision, serial, customType } from "drizzle-orm/pg-core";
+
+// Raw bytes column (PostgreSQL "bytea") used to keep uploaded images inside the database.
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
 
 // ---------------------------------------------------------------------------
 // CATALOG (bilingual + independent website-stock control + SEO)
 // ---------------------------------------------------------------------------
-export const categories = sqliteTable("categories", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   nameEn: text("name_en").notNull(),
   nameUr: text("name_ur").notNull(),
@@ -12,8 +15,8 @@ export const categories = sqliteTable("categories", {
   sortOrder: integer("sort_order").default(0),
 });
 
-export const products = sqliteTable("products", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   sku: text("sku").notNull().unique(),
   categoryId: integer("category_id").notNull(),
@@ -29,14 +32,14 @@ export const products = sqliteTable("products", {
   usageUr: text("usage_ur"),
   weightLabel: text("weight_label").notNull(),
   grammageOptions: text("grammage_options"),
-  price: real("price").notNull(),
-  oldPrice: real("old_price"),
+  price: doublePrecision("price").notNull(),
+  oldPrice: doublePrecision("old_price"),
   image: text("image"),
   bestSeller: integer("best_seller").default(0),
   newArrival: integer("new_arrival").default(0),
   featured: integer("featured").default(0),
   wholesaleEligible: integer("wholesale_eligible").default(1),
-  wholesalePrice: real("wholesale_price"),
+  wholesalePrice: doublePrecision("wholesale_price"),
 
   // Section 5.1 — website-facing display, ADMIN-CONTROLLED ONLY.
   // Never written by any inventory/production code path (see products.internalStockQty below).
@@ -59,22 +62,22 @@ export const products = sqliteTable("products", {
   imageAltUr: text("image_alt_ur"),
 });
 
-export const bundles = sqliteTable("bundles", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const bundles = pgTable("bundles", {
+  id: serial("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   nameEn: text("name_en").notNull(),
   nameUr: text("name_ur").notNull(),
   descriptionEn: text("description_en"),
   descriptionUr: text("description_ur"),
-  price: real("price").notNull(),
-  oldPrice: real("old_price"),
+  price: doublePrecision("price").notNull(),
+  oldPrice: doublePrecision("old_price"),
   image: text("image"),
   websiteStockStatus: text("website_stock_status").notNull().default("available"),
   isHidden: integer("is_hidden").default(0),
 });
 
-export const bundleItems = sqliteTable("bundle_items", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const bundleItems = pgTable("bundle_items", {
+  id: serial("id").primaryKey(),
   bundleId: integer("bundle_id").notNull(),
   productId: integer("product_id").notNull(),
   quantity: integer("quantity").notNull().default(1),
@@ -83,8 +86,8 @@ export const bundleItems = sqliteTable("bundle_items", {
 // ---------------------------------------------------------------------------
 // ORDERS — one unified table for website + every manual/offline channel
 // ---------------------------------------------------------------------------
-export const orders = sqliteTable("orders", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
   orderNumber: text("order_number").notNull().unique(),
   source: text("source").notNull(), // website|facebook|instagram|tiktok|whatsapp|offline|phone|other
   customerName: text("customer_name").notNull(),
@@ -92,10 +95,10 @@ export const orders = sqliteTable("orders", {
   customerEmail: text("customer_email"),
   customerAddress: text("customer_address").notNull(),
   city: text("city"),
-  subtotal: real("subtotal").notNull(),
-  discount: real("discount").default(0),
-  deliveryCharges: real("delivery_charges").default(0),
-  total: real("total").notNull(),
+  subtotal: doublePrecision("subtotal").notNull(),
+  discount: doublePrecision("discount").default(0),
+  deliveryCharges: doublePrecision("delivery_charges").default(0),
+  total: doublePrecision("total").notNull(),
   paymentMethod: text("payment_method").notNull(), // cod
   paymentStatus: text("payment_status").notNull().default("pending"), // pending|paid|failed|refunded
   transactionId: text("transaction_id"),
@@ -111,13 +114,13 @@ export const orders = sqliteTable("orders", {
   createdAt: text("created_at").notNull(),
 });
 
-export const orderItems = sqliteTable("order_items", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const orderItems = pgTable("order_items", {
+  id: serial("id").primaryKey(),
   orderId: integer("order_id").notNull(),
   productId: integer("product_id"),
   productNameSnapshot: text("product_name_snapshot").notNull(),
   quantity: integer("quantity").notNull(),
-  unitPrice: real("unit_price").notNull(),
+  unitPrice: doublePrecision("unit_price").notNull(),
   packagingRecordId: integer("packaging_record_id"), // Stock Fulfilment link, see traceability
   bundleId: integer("bundle_id"),
 });
@@ -125,8 +128,8 @@ export const orderItems = sqliteTable("order_items", {
 // ---------------------------------------------------------------------------
 // REVIEWS (verified purchase, locked after submit)
 // ---------------------------------------------------------------------------
-export const reviews = sqliteTable("reviews", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
   productId: integer("product_id").notNull(),
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
@@ -140,8 +143,8 @@ export const reviews = sqliteTable("reviews", {
 // ---------------------------------------------------------------------------
 // SUPPLIERS / RAW MATERIAL / PRODUCTION / TRACEABILITY (Phase 2, Sections 6.3-6.8)
 // ---------------------------------------------------------------------------
-export const suppliers = sqliteTable("suppliers", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const suppliers = pgTable("suppliers", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   contact: text("contact"),
   address: text("address"),
@@ -150,77 +153,135 @@ export const suppliers = sqliteTable("suppliers", {
   notes: text("notes"),
 });
 
-export const rawMaterials = sqliteTable("raw_materials", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const rawMaterials = pgTable("raw_materials", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
   unit: text("unit").notNull().default("kg"),
-  stockQty: real("stock_qty").notNull().default(0),
+  stockQty: doublePrecision("stock_qty").notNull().default(0),
 });
 
-export const rawMaterialPurchases = sqliteTable("raw_material_purchases", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const rawMaterialPurchases = pgTable("raw_material_purchases", {
+  id: serial("id").primaryKey(),
   supplierId: integer("supplier_id").notNull(),
   rawMaterialId: integer("raw_material_id").notNull(),
   purchaseDate: text("purchase_date").notNull(),
-  quantity: real("quantity").notNull(),
+  quantity: doublePrecision("quantity").notNull(),
   unit: text("unit").notNull(),
-  purchaseRate: real("purchase_rate").notNull(),
-  totalCost: real("total_cost").notNull(),
+  purchaseRate: doublePrecision("purchase_rate").notNull(),
+  totalCost: doublePrecision("total_cost").notNull(),
   paymentType: text("payment_type").notNull().default("cash"), // cash|credit
-  paidAmount: real("paid_amount").notNull().default(0),
-  remainingAmount: real("remaining_amount").notNull().default(0),
+  paidAmount: doublePrecision("paid_amount").notNull().default(0),
+  remainingAmount: doublePrecision("remaining_amount").notNull().default(0),
   notes: text("notes"),
 });
 
-export const processingRecords = sqliteTable("processing_records", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const processingRecords = pgTable("processing_records", {
+  id: serial("id").primaryKey(),
   rawMaterialId: integer("raw_material_id").notNull(),
   purchaseRefId: integer("purchase_ref_id"),
   supplierId: integer("supplier_id"),
   processingDate: text("processing_date").notNull(),
-  qtySent: real("qty_sent").notNull(),
-  processingCost: real("processing_cost").default(0),
+  qtySent: doublePrecision("qty_sent").notNull(),
+  processingCost: doublePrecision("processing_cost").default(0),
   processor: text("processor"),
-  expectedOutput: real("expected_output"),
-  actualOutput: real("actual_output").notNull(),
-  wastageQty: real("wastage_qty").notNull(),
-  wastagePercent: real("wastage_percent").notNull(),
+  expectedOutput: doublePrecision("expected_output"),
+  actualOutput: doublePrecision("actual_output").notNull(),
+  wastageQty: doublePrecision("wastage_qty").notNull(),
+  wastagePercent: doublePrecision("wastage_percent").notNull(),
   batchNumber: text("batch_number").notNull().unique(),
   notes: text("notes"),
 });
 
-export const finishedGoodsBatches = sqliteTable("finished_goods_batches", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const finishedGoodsBatches = pgTable("finished_goods_batches", {
+  id: serial("id").primaryKey(),
   batchNumber: text("batch_number").notNull().unique(),
   processingRecordId: integer("processing_record_id").notNull(),
   productNameLabel: text("product_name_label").notNull(),
-  finalPowderQty: real("final_powder_qty").notNull(),
-  remainingQty: real("remaining_qty").notNull(),
-  processingCost: real("processing_cost").default(0),
+  finalPowderQty: doublePrecision("final_powder_qty").notNull(),
+  remainingQty: doublePrecision("remaining_qty").notNull(),
+  processingCost: doublePrecision("processing_cost").default(0),
   createdAt: text("created_at").notNull(),
 });
 
-export const packagingRecords = sqliteTable("packaging_records", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const packagingRecords = pgTable("packaging_records", {
+  id: serial("id").primaryKey(),
   finishedGoodsBatchId: integer("finished_goods_batch_id").notNull(),
   productId: integer("product_id").notNull(),
   packagingDate: text("packaging_date").notNull(),
   packSizeGrams: integer("pack_size_grams").notNull(), // 50,100,150,200,250,500,1000
   packetsProduced: integer("packets_produced").notNull(),
-  powderUsedQty: real("powder_used_qty").notNull(),
+  powderUsedQty: doublePrecision("powder_used_qty").notNull(),
 });
 
 // ---------------------------------------------------------------------------
 // ADMIN / SETTINGS
 // ---------------------------------------------------------------------------
-export const adminUsers = sqliteTable("admin_users", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   name: text("name").notNull(),
 });
 
-export const settings = sqliteTable("settings", {
+export const settings = pgTable("settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
+});
+
+// ---------------------------------------------------------------------------
+// UPLOADED IMAGES — stored in the database so they survive every redeploy
+// ---------------------------------------------------------------------------
+export const media = pgTable("media", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(), // e.g. product-1f2e....jpg, served at /uploads/<name>
+  mimeType: text("mime_type").notNull(),
+  size: integer("size").notNull(),
+  data: bytea("data").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+// ---------------------------------------------------------------------------
+// CONTACT & SUPPORT MESSAGES (admin inbox)
+// ---------------------------------------------------------------------------
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  kind: text("kind").notNull(), // contact|support
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  category: text("category"),
+  subject: text("subject"),
+  orderNumber: text("order_number"),
+  message: text("message").notNull(),
+  status: text("status").notNull().default("new"), // new|read|archived
+  createdAt: text("created_at").notNull(),
+});
+
+// ---------------------------------------------------------------------------
+// EDITABLE WEBSITE CONTENT
+// ---------------------------------------------------------------------------
+// Repeating blocks edited from Admin → Website Content.
+// kind: faq | testimonial | why (home "Why Aura Foods") | value (About "What we stand for") | blog
+export const contentItems = pgTable("content_items", {
+  id: serial("id").primaryKey(),
+  kind: text("kind").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  titleEn: text("title_en").notNull().default(""), // question / customer name / heading / post title
+  titleUr: text("title_ur").notNull().default(""),
+  bodyEn: text("body_en").notNull().default(""), // answer / quote / text / excerpt
+  bodyUr: text("body_ur").notNull().default(""),
+  extraEn: text("extra_en"), // testimonial city / blog category
+  extraUr: text("extra_ur"),
+  meta: text("meta"), // blog read time, e.g. "5 min"
+  image: text("image"),
+  isHidden: integer("is_hidden").notNull().default(0),
+});
+
+// Simple pages (privacy, returns, shipping, terms) edited from Admin → Pages.
+export const pages = pgTable("pages", {
+  slug: text("slug").primaryKey(),
+  titleEn: text("title_en").notNull(),
+  titleUr: text("title_ur").notNull(),
+  bodyEn: text("body_en").notNull(),
+  bodyUr: text("body_ur").notNull(),
 });

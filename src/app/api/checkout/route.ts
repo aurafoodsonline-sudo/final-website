@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { orders, orderItems, products, bundles } from "@/db/schema";
-import { genOrderNumber } from "@/lib/data";
+import { genOrderNumber, getDeliveryRates } from "@/lib/data";
 import { normalizeWhatsAppPhone, sendWhatsAppAdminAlert, sendWhatsAppOrderConfirmation } from "@/lib/whatsapp";
 import { parseGrammageOptions } from "@/lib/grammage";
 import { deliveryChargeFor, WHOLESALE_VARIANT } from "@/lib/pricing";
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   }
 
   const subtotal = priced.reduce((s, i) => s + i.price * i.qty, 0);
-  const deliveryCharges = deliveryChargeFor(subtotal);
+  const deliveryCharges = deliveryChargeFor(subtotal, await getDeliveryRates());
   const total = subtotal + deliveryCharges;
   const orderNumber = await genOrderNumber();
   const createdAt = new Date().toISOString();

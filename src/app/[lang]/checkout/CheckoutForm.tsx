@@ -1,17 +1,20 @@
 "use client";
+import { useT } from "@/components/SiteProvider";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CartItem, cartKey, getCart, clearCart } from "@/lib/cart";
 import { deliveryChargeFor } from "@/lib/pricing";
+import { useDeliveryRates } from "@/lib/use-delivery-rates";
 import { useRouter } from "next/navigation";
 import { Lang, t } from "@/lib/constants";
 
 export default function CheckoutForm({ lang }: { lang: Lang }) {
-  const d = t(lang);
+  const d = useT(lang);
   const ur = lang === "ur";
   const router = useRouter();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const { rates, ready } = useDeliveryRates();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -21,7 +24,7 @@ export default function CheckoutForm({ lang }: { lang: Lang }) {
   }, []);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const deliveryCharges = deliveryChargeFor(subtotal);
+  const deliveryCharges = deliveryChargeFor(subtotal, rates);
   const total = subtotal + deliveryCharges;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -55,7 +58,7 @@ export default function CheckoutForm({ lang }: { lang: Lang }) {
     setSubmitting(false);
   }
 
-  if (!loaded) return null;
+  if (!loaded || !ready) return null;
 
   if (items.length === 0) {
     return (

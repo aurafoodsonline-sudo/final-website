@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { categories, products, bundles, bundleItems, orders, orderItems, reviews, settings } from "../db/schema";
 import { eq, and, sql, desc } from "drizzle-orm";
+import { DEFAULT_DELIVERY_RATES, DELIVERY_CHARGE_KEY, FREE_DELIVERY_FROM_KEY, parseRate, type DeliveryRates } from "./pricing";
 
 export async function getCategories() {
   return db.select().from(categories).orderBy(categories.sortOrder);
@@ -34,6 +35,14 @@ export async function getProductBySlug(slug: string) {
 export async function getSetting(key: string, fallback = "") {
   const rows = await db.select().from(settings).where(eq(settings.key, key));
   return rows[0]?.value ?? fallback;
+}
+
+// Current delivery fee + free-delivery limit, as set in Admin → Settings.
+export async function getDeliveryRates(): Promise<DeliveryRates> {
+  return {
+    deliveryCharge: parseRate(await getSetting(DELIVERY_CHARGE_KEY), DEFAULT_DELIVERY_RATES.deliveryCharge),
+    freeDeliveryFrom: parseRate(await getSetting(FREE_DELIVERY_FROM_KEY), DEFAULT_DELIVERY_RATES.freeDeliveryFrom),
+  };
 }
 
 // Random, human-friendly order reference that is guaranteed not to exist yet.

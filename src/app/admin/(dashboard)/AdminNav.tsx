@@ -9,6 +9,7 @@ const GROUPS: { title: string; links: { href: string; label: string }[] }[] = [
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/orders/new", label: "+ New Manual Order" },
     { href: "/admin/reviews", label: "Reviews" },
+    { href: "/admin/messages", label: "Messages" },
   ] },
   { title: "Website Catalog", links: [
     { href: "/admin/products", label: "Products & Stock" },
@@ -24,8 +25,13 @@ const GROUPS: { title: string; links: { href: string; label: string }[] }[] = [
     { href: "/admin/inventory/packaging", label: "4. Packaging" },
     { href: "/admin/inventory/traceability", label: "Batch Traceability" },
   ] },
+  { title: "Website Content", links: [
+    { href: "/admin/content", label: "FAQ, Blog & Testimonials" },
+    { href: "/admin/pages", label: "Policy Pages" },
+    { href: "/admin/texts", label: "Website Text" },
+  ] },
   { title: "Setup", links: [
-    { href: "/admin/settings", label: "Settings" },
+    { href: "/admin/settings", label: "Settings & Delivery" },
   ] },
 ];
 

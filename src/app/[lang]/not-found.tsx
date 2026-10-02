@@ -1,11 +1,12 @@
 "use client";
+import { useT } from "@/components/SiteProvider";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { t } from "@/lib/constants";
 
 export default function NotFound() {
   const lang = usePathname()?.startsWith("/ur") ? "ur" : "en";
-  const d = t(lang);
+  const d = useT(lang);
   return (
     <main className="max-w-md mx-auto px-4 py-24 text-center">
       <h1 className="font-heritage text-4xl mb-3 text-chili">404</h1>

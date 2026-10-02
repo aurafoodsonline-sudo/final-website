@@ -1,6 +1,7 @@
+import { getT, getSiteInfo, getContent } from "@/lib/site";
 import Image from "next/image";
 import Link from "next/link";
-import { Lang, t, SOCIAL_LINKS } from "@/lib/constants";
+import { Lang } from "@/lib/constants";
 import { getAllProducts, getAllBundles } from "@/lib/data";
 import ProductCard from "@/components/ProductCard";
 import BundleCard from "@/components/BundleCard";
@@ -13,26 +14,14 @@ import Magnet from "@/components/reactbits/Magnet";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import StarBorder from "@/components/reactbits/StarBorder";
 
-const WHY = [
-  { en: ["100% Organic", "Sourced from trusted Pakistani farms without synthetic chemicals."], ur: ["100% آرگینک", "قابلِ اعتماد پاکستانی کھیتوں سے حاصل شدہ، کیمیکل سے پاک۔"] },
-  { en: ["No Preservatives", "Nothing artificial added. Ever. Just pure spice."], ur: ["کوئی پریزرویٹو نہیں", "کبھی بھی مصنوعی چیز شامل نہیں۔ صرف خالص مصالحہ۔"] },
-  { en: ["No Artificial Colors", "Pure pigment comes from the spice itself."], ur: ["کوئی مصنوعی رنگ نہیں", "خالص رنگ مصالحے سے ہی آتا ہے۔"] },
-  { en: ["Hygienically Packed", "Sealed in food-grade facilities with strict quality control."], ur: ["حفظان صحت کے ساتھ پیک", "فوڈ گریڈ سہولیات میں سختی سے پیک شدہ۔"] },
-  { en: ["Fast Delivery", "Across Pakistan in 2-4 business days. Track your order."], ur: ["تیز ڈیلیوری", "پاکستان بھر میں 2-4 دنوں میں۔ آرڈر ٹریک کریں۔"] },
-  { en: ["Fresh Aroma", "Ground in small batches weekly to preserve essential oils."], ur: ["تازہ خوشبو", "ہر ہفتے چھوٹے بیچوں میں پیسا جاتا ہے۔"] },
-];
-
-const TESTIMONIALS = [
-  { en: ["Ayesha K.", "Karachi", "The Kunri chili is unreal — the colour, the aroma, exactly what my mother used to buy from the village."], ur: ["عائشہ ک.", "کراچی", "کنری کی مرچ بے مثال ہے — رنگ، خوشبو، بالکل ویسی جیسی امی گاؤں سے خریدتی تھیں۔"] },
-  { en: ["Bilal R.", "Lahore", "Switched my whole pantry to Aura. The garam masala makes a difference you can smell from the next room."], ur: ["بلال ر.", "لاہور", "اپنا سارا پینٹری آورا پر شفٹ کر دیا۔ گرم مصالحہ کی خوشبو دور سے آتی ہے۔"] },
-  { en: ["Sana M.", "Islamabad", "Beautifully packed, super fresh, and delivered in two days."], ur: ["ثناء م.", "اسلام آباد", "خوبصورت پیکنگ، بہت تازہ، اور دو دن میں ڈیلیوری۔"] },
-];
-
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
-  const d = t(lang);
+  const d = await getT(lang);
   const products = await getAllProducts();
+  const site = await getSiteInfo();
+  const why = await getContent("why");
+  const testimonials = await getContent("testimonial");
   const bundles = await getAllBundles();
   const bestSellers = products.filter((p) => p.bestSeller);
   const newArrivals = products.filter((p) => p.newArrival);
@@ -143,8 +132,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <AnimatedTitle text={d.why_title} lang={lang} className="font-heritage text-3xl md:text-5xl" />
           </div>
           <div data-reveal="stagger" className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
-            {WHY.map((w, i) => {
-              const [title, desc] = ur ? w.ur : w.en;
+            {why.map((w, i) => {
+              const [title, desc] = ur ? [w.titleUr, w.bodyUr] : [w.titleEn, w.bodyEn];
               return (
                 <SpotlightCard
                   key={i}
@@ -168,8 +157,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <AnimatedTitle text={d.testimonials} lang={lang} className="font-heritage text-3xl md:text-5xl" />
           </div>
           <div data-reveal="stagger" className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((tm, i) => {
-              const [name, city, text] = ur ? tm.ur : tm.en;
+            {testimonials.map((tm, i) => {
+              const [name, city, text] = ur ? [tm.titleUr, tm.extraUr ?? "", tm.bodyUr] : [tm.titleEn, tm.extraEn ?? "", tm.bodyEn];
               return (
                 <figure key={i} className="relative h-full rounded-2xl bg-white/80 p-6 pt-10 shadow-[0_18px_40px_-28px_rgba(74,44,29,0.6)] transition-transform duration-500 hover:-rotate-1 hover:-translate-y-1">
                   <span aria-hidden="true" className="absolute top-2 start-5 font-heritage text-6xl leading-none text-turmeric/60">&ldquo;</span>
@@ -188,7 +177,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <Magnet padding={50} magnetStrength={5}>
             <StarBorder
               as="a"
-              href={SOCIAL_LINKS.whatsapp}
+              href={site.whatsappUrl}
               color="#E8A33D"
               speed="5s"
               thickness={2}

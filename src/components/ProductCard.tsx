@@ -1,3 +1,5 @@
+"use client";
+import { useT } from "@/components/SiteProvider";
 import Link from "next/link";
 import Image from "next/image";
 import { Lang, t } from "@/lib/constants";
@@ -6,7 +8,7 @@ import SpotlightCard from "./reactbits/SpotlightCard";
 import { parseGrammageOptions } from "@/lib/grammage";
 
 export default function ProductCard({ p, lang }: { p: any; lang: Lang }) {
-  const d = t(lang);
+  const d = useT(lang);
   const name = lang === "ur" ? p.nameUr : p.nameEn;
   const tagline = lang === "ur" ? p.taglineUr : p.taglineEn;
   const options = parseGrammageOptions(p.grammageOptions, p.weightLabel, p.price);

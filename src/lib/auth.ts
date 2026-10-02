@@ -3,7 +3,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 // Set SESSION_SECRET in production (any long random string).
-const secret = new TextEncoder().encode(process.env.SESSION_SECRET ?? "aura-foods-dev-secret-change-me");
+// Without SESSION_SECRET a random secret is used, so nobody can forge a login cookie; admins
+// just need to log in again after each restart.
+import { randomBytes } from "node:crypto";
+const fallbackSecret = randomBytes(32).toString("hex");
+if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
+  console.warn("[auth] SESSION_SECRET is not set — using a temporary secret. Set it in Coolify so logins survive restarts.");
+}
+const secret = new TextEncoder().encode(process.env.SESSION_SECRET || fallbackSecret);
 const COOKIE = "aura_admin_session";
 const SESSION_HOURS = 12;
 

@@ -1,16 +1,6 @@
 export const SITE_NAME = "Aura Foods";
 export const TAGLINE = "Crafted for Pure Taste";
-export const PHONE_DISPLAY = "+92 301 2730116";
-export const WHATSAPP_NUMBER = "923012730116";
-export const BUSINESS_EMAIL = "aurafoodsonline@gmail.com";
-export const BUSINESS_CITY = "Karachi";
-export const SOCIAL_LINKS = {
-  whatsapp: `https://wa.me/${WHATSAPP_NUMBER}`,
-  instagram: "https://instagram.com/aurafoodsonline",
-  facebook: "https://facebook.com/share/1Ctuc2U2rj/",
-  tiktok: "https://tiktok.com/@aurafoodsonline",
-  daraz: "https://daraz.pk/shop/d-mall-23/",
-};
+// Phone, email, WhatsApp and social links are edited in Admin → Settings (see src/lib/site.ts).
 export const SITE_URL = "https://www.aurafoods.online";
 
 export const DICT = {
@@ -103,6 +93,11 @@ export const DICT = {
 } as const;
 
 export type Lang = "en" | "ur";
-export function t(lang: Lang) {
+export type Dict = { [K in keyof (typeof DICT)["en"]]: string };
+export type TextKey = Exclude<keyof Dict, "dir">;
+
+// Built-in wording only. Pages use getT() (server) or useT() (browser), which also apply
+// the changes made in Admin → Website Text.
+export function t(lang: Lang): Dict {
   return DICT[lang];
 }

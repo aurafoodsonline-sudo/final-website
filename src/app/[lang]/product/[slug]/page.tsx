@@ -1,3 +1,4 @@
+import { getT } from "@/lib/site";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Lang, t, SITE_URL } from "@/lib/constants";
@@ -24,7 +25,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
   const { lang: rawLang, slug } = await params;
   const { review: reviewStatus } = await searchParams;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
-  const d = t(lang);
+  const d = await getT(lang);
   const p = await getProductBySlug(slug);
   if (!p || p.isHidden) return notFound();
   const reviews = await getApprovedReviews(p.id);

@@ -2,7 +2,7 @@ import { Lang } from "@/lib/constants";
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { PHONE_DISPLAY, SOCIAL_LINKS } from "@/lib/constants";
+import { getSiteInfo } from "@/lib/site";
 
 export default async function OrderConfirmedPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ ref?: string; phone?: string; wa?: string; total?: string }> }) {
   const { lang: rawLang } = await params;
@@ -10,7 +10,8 @@ export default async function OrderConfirmedPage({ params, searchParams }: { par
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
   if (!ref) redirect(`/${lang}/shop`);
   const chatMessage = encodeURIComponent(`Assalam-o-Alaikum Aura Foods, Order ID #${ref ?? ""} ke bare me pochna tha`);
-  const chatUrl = `${SOCIAL_LINKS.whatsapp}?text=${chatMessage}`;
+  const site = await getSiteInfo();
+  const chatUrl = `${site.whatsappUrl}?text=${chatMessage}`;
   return (
     <main className="max-w-md mx-auto px-4 py-20 text-center">
       <h1 className="font-heritage text-3xl mb-3 text-chili">
@@ -22,7 +23,7 @@ export default async function OrderConfirmedPage({ params, searchParams }: { par
       {total ? <p className="font-semibold mb-2">{lang === "ur" ? `کل رقم (کیش آن ڈیلیوری): Rs. ${total}` : `Total to pay on delivery: Rs. ${total}`}</p> : null}
       <p className="text-sm opacity-70 mb-6">
         {wa === "sent"
-          ? (lang === "ur" ? `واٹس ایپ تصدیق ${phone || PHONE_DISPLAY} پر بھیج دی گئی ہے۔` : `WhatsApp confirmation sent to ${phone || PHONE_DISPLAY}.`)
+          ? (lang === "ur" ? `واٹس ایپ تصدیق ${phone || site.phone} پر بھیج دی گئی ہے۔` : `WhatsApp confirmation sent to ${phone || site.phone}.`)
           : (lang === "ur" ? "آپ کا آرڈر محفوظ ہو گیا ہے۔ ہماری ٹیم تصدیق کے لیے جلد آپ سے رابطہ کرے گی۔" : "Your order is saved. Our team will contact you shortly to confirm it.")}
       </p>
       <p className="text-xs opacity-60 mb-6">{lang === "ur" ? "یہ آرڈر نمبر محفوظ رکھیں — آرڈر ٹریک کرنے کے لیے درکار ہو گا۔" : "Keep this order reference — you'll need it to track your order."}</p>

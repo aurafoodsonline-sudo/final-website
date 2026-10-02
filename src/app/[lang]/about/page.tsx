@@ -1,25 +1,24 @@
+import { getT, getContent, getSiteInfo } from "@/lib/site";
+import { getAllProducts } from "@/lib/data";
 import { Lang, t } from "@/lib/constants";
 import AboutCarousel from "@/components/AboutCarousel";
 import AnimatedTitle from "@/components/motion/AnimatedTitle";
 import CountUp from "@/components/reactbits/CountUp";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 
-const STATS = [
-  { to: 8, suffix: "+", key: "stat_products" },
-  { to: 50, suffix: "+", key: "stat_farms" },
-  { to: 100, suffix: "%", key: "stat_promise" },
-] as const;
-
-const VALUES = [
-  { en: ["100% Organic", "Sourced from trusted Pakistani farms without synthetic chemicals."], ur: ["100% آرگینک", "قابلِ اعتماد پاکستانی کھیتوں سے، کیمیکل سے پاک۔"] },
-  { en: ["No Preservatives", "Nothing artificial added. Ever."], ur: ["کوئی پریزرویٹو نہیں", "کبھی مصنوعی چیز شامل نہیں۔"] },
-  { en: ["Hygienically Packed", "Sealed in food-grade facilities."], ur: ["حفظان صحت کے ساتھ پیک", "فوڈ گریڈ سہولیات میں پیک شدہ۔"] },
-];
-
 export default async function AboutPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
-  const d = t(lang);
+  const d = await getT(lang);
+  const values = await getContent("value");
+  const site = await getSiteInfo();
+  const productCount = (await getAllProducts()).length;
+  // Product count is live; partner-farm number is set in Admin → Settings.
+  const STATS = [
+    { to: productCount, suffix: "+", key: "stat_products" },
+    { to: site.partnerFarms, suffix: "+", key: "stat_farms" },
+    { to: 100, suffix: "%", key: "stat_promise" },
+  ] as const;
   return (
     <main className="max-w-5xl mx-auto px-4 py-14">
       <p data-reveal="fade" className="eyebrow mb-3">{d.about_title}</p>
@@ -47,8 +46,8 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       <AnimatedTitle text={d.our_values} lang={lang} className="block font-heritage text-3xl md:text-4xl mb-2 w-full" />
       <p data-reveal="fade" className="text-center opacity-70 mb-10">{d.what_we_stand_for}</p>
       <div data-reveal="stagger" className="grid md:grid-cols-3 gap-6">
-        {VALUES.map((v, i) => {
-          const [title, desc] = lang === "ur" ? v.ur : v.en;
+        {values.map((v, i) => {
+          const [title, desc] = lang === "ur" ? [v.titleUr, v.bodyUr] : [v.titleEn, v.bodyEn];
           return (
             <SpotlightCard key={i} spotlightColor="rgba(232, 163, 61, 0.30)" className="h-full rounded-2xl border border-cinnamon/10 bg-white/75 p-6 text-center transition-transform duration-500 hover:-translate-y-1">
               <h3 className="font-semibold text-chili mb-1">{title}</h3>

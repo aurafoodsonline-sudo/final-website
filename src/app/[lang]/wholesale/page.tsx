@@ -1,4 +1,5 @@
-import { Lang, t, SOCIAL_LINKS } from "@/lib/constants";
+import { getT, getSiteInfo } from "@/lib/site";
+import { Lang } from "@/lib/constants";
 import { getAllProducts } from "@/lib/data";
 import { WHOLESALE_VARIANT } from "@/lib/pricing";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -7,14 +8,14 @@ import Image from "next/image";
 export default async function WholesalePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
-  const d = t(lang);
+  const d = await getT(lang);
   const products = (await getAllProducts()).filter((p) => p.wholesaleEligible);
   return (
     <main className="max-w-6xl mx-auto px-4 py-14">
       <p data-reveal="fade" className="text-xs uppercase tracking-wide text-chili mb-2 text-center">{d.wholesale_badge}</p>
       <h1 data-reveal="up" className="font-heritage text-3xl md:text-4xl mb-3 text-center">{d.wholesale_title}</h1>
       <div data-reveal="zoom" className="text-center mb-10">
-        <a href={SOCIAL_LINKS.whatsapp} className="inline-block bg-cardamom text-white px-6 py-3 rounded-full font-medium">{d.wholesale_cta}</a>
+        <a href={(await getSiteInfo()).whatsappUrl} className="inline-block bg-cardamom text-white px-6 py-3 rounded-full font-medium">{d.wholesale_cta}</a>
       </div>
       <h2 data-reveal="up" className="font-heritage text-2xl mb-2">{d.wholesale_catalog}</h2>
       <p className="opacity-70 text-sm mb-6">{d.wholesale_note}</p>

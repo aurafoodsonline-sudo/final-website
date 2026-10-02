@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { saveUploadedImage } from "@/lib/uploads";
 import { parseGrammageOptions } from "@/lib/grammage";
+import { DELIVERY_CHARGE_KEY, FREE_DELIVERY_FROM_KEY, deliveryRuleText } from "@/lib/pricing";
 
 // ---------------------------------------------------------------------------
 // Small helpers so every form behaves the same way:
@@ -251,7 +252,7 @@ export async function createProduct(formData: FormData) {
   if (slugTaken) fail(back, `Another product already uses the web address "${slug}". Please change the name or web address.`);
   let sku = text(formData, "sku");
   if (!sku) {
-    const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(products);
+    const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(products);
     sku = `AURA-${String(Number(count) + 1).padStart(3, "0")}-${Date.now().toString().slice(-4)}`;
   }
   const [skuTaken] = await db.select({ id: products.id }).from(products).where(eq(products.sku, sku));
@@ -516,4 +517,23 @@ export async function updateSettings(formData: FormData) {
   }
   revalidatePath("/admin/settings");
   done("/admin/settings", `Settings saved. WhatsApp automation is ${enabled === "true" ? "ON" : "OFF"}.`);
+}
+
+// Delivery fee shown in the cart/checkout and charged on website orders.
+export async function updateDeliverySettings(formData: FormData) {
+  await requireAdmin();
+  const back = "/admin/settings";
+  const fee = num(formData, "delivery_charge");
+  const freeFrom = num(formData, "free_delivery_from");
+  if (fee === null || fee < 0) fail(back, "Please enter a delivery charge of 0 or more (0 = free delivery on every order).");
+  if (freeFrom === null || freeFrom < 0) fail(back, "Please enter a free-delivery amount of 0 or more (0 = delivery is never free).");
+  const values: [string, string][] = [
+    [DELIVERY_CHARGE_KEY, String(Math.round(fee))],
+    [FREE_DELIVERY_FROM_KEY, String(Math.round(freeFrom))],
+  ];
+  for (const [key, value] of values) {
+    await db.insert(settings).values({ key, value }).onConflictDoUpdate({ target: settings.key, set: { value } });
+  }
+  refreshSite();
+  done(back, `Delivery saved: ${deliveryRuleText("en", { deliveryCharge: Math.round(fee), freeDeliveryFrom: Math.round(freeFrom) })}`);
 }

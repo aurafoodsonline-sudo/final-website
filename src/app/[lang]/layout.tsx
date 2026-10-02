@@ -14,16 +14,18 @@ import MotionProviders from "@/components/motion/MotionProviders";
 // when the visitor allows motion, and un-hides everything if the animation code hasn't
 // started after 4 seconds (slow network, script blocked), so content is never lost.
 const MOTION_BOOT = `(function(){try{var d=document.documentElement;if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('motion-ok');setTimeout(function(){if(!window.__auraReveal)d.classList.remove('motion-ok')},4000)}}catch(e){}})();`;
-import { Lang, t } from "@/lib/constants";
-import { SITE_URL, SOCIAL_LINKS, BUSINESS_EMAIL, PHONE_DISPLAY, BUSINESS_CITY } from "@/lib/constants";
+import { Lang } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
+import { getT, getSiteInfo } from "@/lib/site";
+import SiteProvider from "@/components/SiteProvider";
 
 // Loaded via a plain <link> below (not next/font) so the build never depends on reaching
 // fonts.googleapis.com — falls back cleanly to the system stacks in globals.css if the
 // deployment environment has no outbound internet access to Google Fonts.
 
-export async function generateStaticParams() {
-  return [{ lang: "en" }, { lang: "ur" }];
-}
+// Every page reads products, prices and text from the database, so pages are rendered on
+// each visit (no copies baked in at build time, and the build needs no database).
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
@@ -54,21 +56,22 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function LangLayout({ children, params }: { children: React.ReactNode; params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const l = (lang === "ur" ? "ur" : "en") as Lang;
-  const dict = t(l);
+  const dict = await getT(l);
+  const site = await getSiteInfo();
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Aura Foods",
+    name: site.siteName,
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo.jpg`,
-    sameAs: [SOCIAL_LINKS.facebook, SOCIAL_LINKS.instagram, SOCIAL_LINKS.tiktok, SOCIAL_LINKS.daraz],
+    sameAs: [site.social.facebook, site.social.instagram, site.social.tiktok, site.social.youtube, site.social.daraz].filter(Boolean),
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: PHONE_DISPLAY,
-      email: BUSINESS_EMAIL,
+      telephone: site.phone,
+      email: site.email,
       contactType: "customer service",
-      areaServed: BUSINESS_CITY,
+      areaServed: site.city,
       availableLanguage: ["English", "Urdu"],
     },
   };
@@ -93,6 +96,7 @@ export default async function LangLayout({ children, params }: { children: React
           />
         )}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <SiteProvider value={{ lang: l, dict, site }}>
         <MotionProviders>
           <SmoothScroll />
           <ScrollProgress />
@@ -101,6 +105,7 @@ export default async function LangLayout({ children, params }: { children: React
           {children}
           <Footer lang={l} />
         </MotionProviders>
+        </SiteProvider>
       </body>
     </html>
   );
