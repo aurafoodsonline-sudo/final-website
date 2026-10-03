@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-heritage: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+  --font-ur-heritage: "Noto Nastaliq Urdu", serif;
+  --font-ur-body: "Noto Naskh Arabic", serif;
+  --font-script: "Dancing Script", "Brush Script MT", cursive;
+}
+
+body {
+  background: #FBF3E7;
+  color: #4A2C1D;
+  overflow-x: hidden;
+}
+
+[dir="rtl"] body {
+  font-family: var(--font-ur-body);
+}
+
+.hero-banner-fade {
+  border-radius: 2rem;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 7%, #000 91%, transparent 100%);
+}
+
+/* ------------------------------------------------------------------ motion layer */
+
+/* Elements that animate in on scroll start hidden, but only once JS confirmed motion is OK
+   (see MOTION_BOOT in app/[lang]/layout.tsx). */
+.motion-ok [data-reveal="up"],
+.motion-ok [data-reveal="heading"],
+.motion-ok [data-reveal="fade"],
+.motion-ok [data-reveal="zoom"],
+.motion-ok [data-reveal="clip"],
+.motion-ok [data-reveal="stagger"] > *,
+.motion-ok .split-parent {
+  visibility: hidden;
+}
+
+/* Automatic mode: the same elements RevealManager animates on its own (keep this list in sync
+   with AUTO in components/motion/RevealManager.tsx). Once JS tags the outermost one with
+   data-reveal, everything inside it becomes visible again and animates as one piece. */
+.motion-ok main :is(h1, h2, h3, h4, p, blockquote, figure, form, table, details, ul, ol, img, .grid, .flex-wrap):not([data-reveal], [data-reveal] *, [data-no-reveal], [data-no-reveal] *, .split-parent, .split-parent *) {
+  visibility: hidden;
+}
+
+/* Animated underline for header links */
+.nav-link {
+  position: relative;
+  padding-block: 0.25rem;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #C1440E, #E8A33D);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-link:hover::after,
+.nav-link.is-active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+[dir="rtl"] .nav-link::after { transform-origin: left; }
+[dir="rtl"] .nav-link:hover::after,
+[dir="rtl"] .nav-link.is-active::after { transform-origin: right; }
+
+/* Section eyebrow: small label with a turmeric rule */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #C1440E;
+}
+.eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+[dir="rtl"] .eyebrow { letter-spacing: 0; }
+
+/* Soft grain on warm sections */
+.grain {
+  position: relative;
+  isolation: isolate;
+}
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: radial-gradient(rgba(74, 44, 29, 0.08) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link::after { transition: none; }
+}
