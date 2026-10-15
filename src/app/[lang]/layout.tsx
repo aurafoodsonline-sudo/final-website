@@ -15,7 +15,7 @@ import MotionProviders from "@/components/motion/MotionProviders";
 // started after 4 seconds (slow network, script blocked), so content is never lost.
 const MOTION_BOOT = `(function(){try{var d=document.documentElement;if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('motion-ok');setTimeout(function(){if(!window.__auraReveal)d.classList.remove('motion-ok')},4000)}}catch(e){}})();`;
 import { Lang } from "@/lib/constants";
-import { SITE_URL } from "@/lib/constants";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getT, getSiteInfo } from "@/lib/site";
 import SiteProvider from "@/components/SiteProvider";
 
@@ -30,21 +30,27 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const isUr = lang === "ur";
+  const title = isUr ? "آورا فوڈز — خالص • معیاری • خوشبودار" : "Aura Foods — Crafted for Pure Taste";
+  const description = isUr
+    ? "پاکستان بھر میں ڈیلیوری کے ساتھ خالص اور اعلیٰ معیار کے آرگینک مصالحے، مسالہ جات اور اسپائس بلینڈز۔"
+    : "Shop pure, premium organic spices, seasonings, and spice blends from Aura Foods, delivered across Pakistan and beyond.";
   return {
     metadataBase: new URL(SITE_URL),
-    title: isUr ? "آورا فوڈز — خالص • معیاری • خوشبودار" : "Aura Foods — Crafted for Pure Taste",
-    description: isUr
-      ? "پاکستان بھر میں ڈیلیوری کے ساتھ خالص اور پریمیم آرگینک مصالحے۔"
-      : "Pure & Premium Organic Spices, delivered across Pakistan and beyond.",
+    title: { default: title, template: `%s | ${SITE_NAME}` },
+    description,
+    keywords: isUr
+      ? ["آرگینک مصالحے", "خالص مصالحہ جات", "پاکستانی مصالحے", "مسالہ بلینڈز", "آورا فوڈز"]
+      : ["organic spices", "Pakistani spices", "pure seasonings", "spice blends", "premium spices", "Aura Foods"],
     alternates: {
       canonical: `${SITE_URL}/${lang}`,
       languages: { en: `${SITE_URL}/en`, ur: `${SITE_URL}/ur` },
     },
     openGraph: {
-      url: SITE_URL,
+      url: `${SITE_URL}/${lang}`,
       type: "website",
-      title: isUr ? "آورا فوڈز — خالص • معیاری • خوشبودار" : "Aura Foods — Crafted for Pure Taste",
-      siteName: "Aura Foods",
+      title,
+      description,
+      siteName: SITE_NAME,
     },
     verification: process.env.FACEBOOK_DOMAIN_VERIFICATION
       ? { other: { "facebook-domain-verification": process.env.FACEBOOK_DOMAIN_VERIFICATION } }

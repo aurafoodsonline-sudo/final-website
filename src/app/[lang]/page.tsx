@@ -1,7 +1,8 @@
 import { getT, getSiteInfo, getContent } from "@/lib/site";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Lang } from "@/lib/constants";
+import { Lang, SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getAllProducts, getAllBundles } from "@/lib/data";
 import ProductCard from "@/components/ProductCard";
 import BundleCard from "@/components/BundleCard";
@@ -13,6 +14,22 @@ import BlurText from "@/components/reactbits/BlurText";
 import Magnet from "@/components/reactbits/Magnet";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import StarBorder from "@/components/reactbits/StarBorder";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang: rawLang } = await params;
+  const lang = rawLang === "ur" ? "ur" : "en";
+  const d = await getT(lang);
+  const title = d.hero_title;
+  const description = d.hero_sub;
+  return {
+    title,
+    description,
+    keywords: lang === "ur"
+      ? ["آرگینک مصالحے", "خالص مصالحہ جات", "پاکستانی مصالحے", "آورا فوڈز"]
+      : ["organic spices", "pure Pakistani spices", "spice blends", "Aura Foods"],
+    openGraph: { title: `${title} | ${SITE_NAME}`, description, type: "website", url: `${SITE_URL}/${lang}` },
+  };
+}
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

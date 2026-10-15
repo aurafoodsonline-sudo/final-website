@@ -26,26 +26,28 @@ export async function POST(req: NextRequest) {
   const source = SOURCES.includes(body.source) ? body.source : "other";
   const paymentStatus = PAYMENT_STATUSES.includes(body.paymentStatus) ? body.paymentStatus : "pending";
   const discount = Math.max(0, Number(body.discount) || 0);
-  const deliveryCharges = Math.max(0, Number(body.deliveryCharges) || 0);
   const notes = String(body.notes ?? "").trim() || null;
-  const items = (Array.isArray(body.items) ? body.items : [])
+  const rawItems = Array.isArray(body.items) ? body.items : [];
+  const items = rawItems
     .map((i: any) => ({
       productId: Number(i.productId) || null,
       type: i.type === "bundle" ? "bundle" : "product",
       name: String(i.name ?? "").trim(),
       price: Number(i.price),
       qty: Math.round(Number(i.qty)),
+      deliveryCharge: Number(i.deliveryCharge ?? 0),
     }))
-    .filter((i: any) => i.name && Number.isFinite(i.price) && i.price >= 0 && i.qty >= 1);
+    .filter((i: any) => i.name && Number.isFinite(i.price) && i.price >= 0 && Number.isInteger(i.qty) && i.qty >= 1 && Number.isFinite(i.deliveryCharge) && i.deliveryCharge >= 0);
 
   if (!customerName || !customerPhone || !customerAddress) {
     return NextResponse.json({ error: "Customer name, phone and address are required." }, { status: 400 });
   }
-  if (items.length === 0) {
-    return NextResponse.json({ error: "Add at least one product with a quantity of 1 or more." }, { status: 400 });
+  if (items.length === 0 || items.length !== rawItems.length) {
+    return NextResponse.json({ error: "Each item needs a spice name, a valid price, a quantity of 1 or more, and a valid delivery charge." }, { status: 400 });
   }
 
   const subtotal = items.reduce((s: number, i: any) => s + i.price * i.qty, 0);
+  const deliveryCharges = items.reduce((s: number, i: any) => s + i.deliveryCharge, 0);
   if (discount > subtotal) return NextResponse.json({ error: "Discount cannot be more than the subtotal." }, { status: 400 });
   const total = subtotal - discount + deliveryCharges;
   const orderNumber = await genOrderNumber();
@@ -64,7 +66,7 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
       productId: i.type === "bundle" ? null : i.productId,
       bundleId: i.type === "bundle" ? i.productId : null,
-      productNameSnapshot: i.name, quantity: i.qty, unitPrice: i.price,
+      productNameSnapshot: i.name, quantity: i.qty, unitPrice: i.price, deliveryCharge: i.deliveryCharge,
     });
   }
   revalidatePath("/admin", "layout");

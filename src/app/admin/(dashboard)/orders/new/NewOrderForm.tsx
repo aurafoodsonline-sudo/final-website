@@ -3,35 +3,38 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 type CatalogItem = { key: string; id: number; name: string; price: number; type: "product" | "bundle" };
-type Line = CatalogItem & { qty: number };
+type Line = { key: string; id: number | null; name: string; price: number; type: "product" | "bundle"; qty: number; deliveryCharge: number };
 
 const SOURCES = ["facebook", "instagram", "tiktok", "whatsapp", "phone", "offline", "website", "other"];
 
 export default function NewOrderForm({ products, bundles, defaultDeliveryCharge }: { products: CatalogItem[]; bundles: CatalogItem[]; defaultDeliveryCharge: number }) {
   const router = useRouter();
   const catalog = [...products, ...bundles];
-  const [lines, setLines] = useState<Line[]>(catalog[0] ? [{ ...catalog[0], qty: 1 }] : []);
+  const [lines, setLines] = useState<Line[]>(catalog[0]
+    ? [{ ...catalog[0], qty: 1, deliveryCharge: defaultDeliveryCharge }]
+    : [{ key: "", id: null, name: "", price: 0, type: "product", qty: 1, deliveryCharge: defaultDeliveryCharge }]);
   const [source, setSource] = useState("facebook");
   const [discount, setDiscount] = useState(0);
-  const [deliveryCharges, setDeliveryCharges] = useState(defaultDeliveryCharge);
+  const [globalDeliveryCharge, setGlobalDeliveryCharge] = useState(defaultDeliveryCharge);
   const [paymentStatus, setPaymentStatus] = useState("pending");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  if (catalog.length === 0) {
-    return <p className="bg-white rounded-xl p-6 shadow-sm">Add a product first (Products → Add Product) before creating manual orders.</p>;
-  }
-
   function chooseItem(idx: number, key: string) {
+    if (!key) {
+      setLines((ls) => ls.map((line, i) => (i === idx ? { ...line, key: "", id: null, name: "", price: 0, type: "product" } : line)));
+      return;
+    }
     const item = catalog.find((entry) => entry.key === key);
     if (!item) return;
-    setLines((ls) => ls.map((line, i) => (i === idx ? { ...item, qty: line.qty } : line)));
+    setLines((ls) => ls.map((line, i) => (i === idx ? { ...item, qty: line.qty, deliveryCharge: line.deliveryCharge } : line)));
   }
   function setLine(idx: number, patch: Partial<Line>) {
     setLines((ls) => ls.map((line, i) => (i === idx ? { ...line, ...patch } : line)));
   }
 
   const subtotal = lines.reduce((s, l) => s + (l.price || 0) * (l.qty || 0), 0);
+  const deliveryCharges = lines.reduce((s, l) => s + (l.deliveryCharge || 0), 0);
   const total = subtotal - discount + deliveryCharges;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -39,6 +42,7 @@ export default function NewOrderForm({ products, bundles, defaultDeliveryCharge 
     if (submitting) return;
     setError("");
     if (lines.length === 0) { setError("Add at least one product."); return; }
+    if (lines.some((l) => !l.name.trim())) { setError("Enter a spice name for every item."); return; }
     if (lines.some((l) => !l.qty || l.qty < 1)) { setError("Every product needs a quantity of at least 1."); return; }
     if (discount > subtotal) { setError("Discount cannot be more than the subtotal."); return; }
     setSubmitting(true);
@@ -47,7 +51,7 @@ export default function NewOrderForm({ products, bundles, defaultDeliveryCharge 
       source, discount, deliveryCharges, paymentStatus,
       customerName: fd.get("customerName"), customerPhone: fd.get("customerPhone"),
       customerAddress: fd.get("customerAddress"), city: fd.get("city"), notes: fd.get("notes"),
-      items: lines.map((l) => ({ productId: l.id, type: l.type, name: l.name, price: l.price, qty: l.qty })),
+      items: lines.map((l) => ({ productId: l.id, type: l.type, name: l.name, price: l.price, qty: l.qty, deliveryCharge: l.deliveryCharge })),
     };
     try {
       const res = await fetch("/api/admin/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -65,7 +69,7 @@ export default function NewOrderForm({ products, bundles, defaultDeliveryCharge 
 
   const input = "border rounded-lg px-3 py-2 w-full mt-1";
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm max-w-2xl grid gap-4">
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm max-w-5xl grid gap-4">
       <label className="text-sm font-medium">Where did this order come from?
         <select value={source} onChange={(e) => setSource(e.target.value)} className={`${input} capitalize`}>
           {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -80,28 +84,42 @@ export default function NewOrderForm({ products, bundles, defaultDeliveryCharge 
 
       <div>
         <p className="text-sm font-medium mb-1">Products</p>
-        <p className="text-xs opacity-60 mb-2">Choose a product and size. You can change the price if you agreed a different price with the customer.</p>
+        <p className="text-xs opacity-60 mb-2">Choose a catalog product or enter any spice name and price manually.</p>
         {lines.map((l, i) => (
-          <div key={i} className="flex flex-wrap gap-2 mb-2 items-center">
-            <select value={l.key} onChange={(e) => chooseItem(i, e.target.value)} className="border rounded-lg px-2 py-1.5 flex-1 min-w-56">
-              {products.length > 0 && <optgroup label="Products">{products.map((item) => <option key={item.key} value={item.key}>{item.name} — Rs. {item.price}</option>)}</optgroup>}
-              {bundles.length > 0 && <optgroup label="Bundles">{bundles.map((item) => <option key={item.key} value={item.key}>{item.name} (Bundle) — Rs. {item.price}</option>)}</optgroup>}
-            </select>
-            <label className="text-xs flex items-center gap-1">Qty
-              <input type="number" min={1} value={l.qty || ""} onChange={(e) => setLine(i, { qty: Math.max(0, Math.round(Number(e.target.value))) })} className="border rounded-lg px-2 py-1.5 w-16" />
+          <div key={i} className="grid grid-cols-2 md:grid-cols-[minmax(12rem,1.5fr)_minmax(12rem,1.5fr)_5rem_7rem_8rem_auto] gap-2 mb-3 items-end">
+            <label className="text-xs">Spice Name
+              <input value={l.name} onChange={(e) => setLine(i, { name: e.target.value })} className="border rounded-lg px-2 py-1.5 w-full mt-1" required />
             </label>
-            <label className="text-xs flex items-center gap-1">Rs.
-              <input type="number" min={0} value={l.price} onChange={(e) => setLine(i, { price: Math.max(0, Number(e.target.value)) })} className="border rounded-lg px-2 py-1.5 w-24" />
+            <label className="text-xs">Catalog item (optional)
+              <select value={l.key} onChange={(e) => chooseItem(i, e.target.value)} className="border rounded-lg px-2 py-1.5 w-full mt-1">
+                <option value="">Custom/manual item</option>
+                {products.length > 0 && <optgroup label="Products">{products.map((item) => <option key={item.key} value={item.key}>{item.name} — Rs. {item.price}</option>)}</optgroup>}
+                {bundles.length > 0 && <optgroup label="Bundles">{bundles.map((item) => <option key={item.key} value={item.key}>{item.name} (Bundle) — Rs. {item.price}</option>)}</optgroup>}
+              </select>
             </label>
-            <button type="button" onClick={() => setLines((ls) => ls.filter((_, idx) => idx !== i))} className="text-chili text-sm px-2" aria-label="Remove line">✕</button>
+            <label className="text-xs">Qty
+              <input type="number" min={1} value={l.qty || ""} onChange={(e) => setLine(i, { qty: Math.max(0, Math.round(Number(e.target.value))) })} className="border rounded-lg px-2 py-1.5 w-full mt-1" required />
+            </label>
+            <label className="text-xs">Price (Rs.)
+              <input type="number" min={0} value={l.price} onChange={(e) => setLine(i, { price: Math.max(0, Number(e.target.value)) })} className="border rounded-lg px-2 py-1.5 w-full mt-1" required />
+            </label>
+            <label className="text-xs">Delivery (Rs.)
+              <input type="number" min={0} value={l.deliveryCharge} onChange={(e) => setLine(i, { deliveryCharge: Math.max(0, Number(e.target.value)) })} className="border rounded-lg px-2 py-1.5 w-full mt-1" required />
+            </label>
+            <button type="button" onClick={() => setLines((ls) => ls.filter((_, idx) => idx !== i))} className="text-chili text-sm px-2 py-2" aria-label="Remove line">✕</button>
           </div>
         ))}
-        <button type="button" onClick={() => setLines((ls) => [...ls, { ...catalog[0], qty: 1 }])} className="text-sm underline">+ Add another product</button>
+        <div className="flex flex-wrap items-end gap-2">
+          <button type="button" onClick={() => setLines((ls) => [...ls, { key: "", id: null, name: "", price: 0, type: "product", qty: 1, deliveryCharge: 0 }])} className="text-sm underline">+ Add another item</button>
+          <label className="text-xs ml-auto">Global delivery charge (Rs.)
+            <input type="number" min={0} value={globalDeliveryCharge} onChange={(e) => setGlobalDeliveryCharge(Math.max(0, Number(e.target.value)))} className="border rounded-lg px-2 py-1.5 w-36 mt-1" />
+          </label>
+          <button type="button" onClick={() => setLines((ls) => ls.map((line) => ({ ...line, deliveryCharge: globalDeliveryCharge })))} className="border border-cinnamon/30 rounded-full px-3 py-1.5 text-sm">Apply to All</button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div>
         <label className="text-sm">Discount (Rs.)<input type="number" min={0} value={discount} onChange={(e) => setDiscount(Math.max(0, Number(e.target.value)))} className={input} /></label>
-        <label className="text-sm">Delivery charges (Rs.)<input type="number" min={0} value={deliveryCharges} onChange={(e) => setDeliveryCharges(Math.max(0, Number(e.target.value)))} className={input} /></label>
       </div>
       <label className="text-sm">Payment status
         <select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)} className={`${input} capitalize`}>

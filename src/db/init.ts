@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS order_items (
   product_name_snapshot TEXT NOT NULL,
   quantity INTEGER NOT NULL,
   unit_price REAL NOT NULL,
+  delivery_charge REAL NOT NULL DEFAULT 0,
   packaging_record_id INTEGER,
   bundle_id INTEGER
 );
@@ -211,6 +212,7 @@ function addColumnIfMissing(table: string, column: string, type: string) {
   if (!columns.some((c) => c.name === column)) sqlite.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
 }
 addColumnIfMissing("order_items", "bundle_id", "INTEGER");
+addColumnIfMissing("order_items", "delivery_charge", "REAL NOT NULL DEFAULT 0");
 addColumnIfMissing("products", "grammage_options", "TEXT");
 
 // Default settings rows so the admin Settings page always has something to update.

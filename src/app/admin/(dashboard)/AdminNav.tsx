@@ -84,7 +84,7 @@ export default function AdminNav() {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between bg-cinnamon text-cream px-4 py-3">
+      <div className="admin-mobile-bar md:hidden sticky top-0 z-40 flex items-center justify-between bg-cinnamon text-cream px-4 py-3">
         <Link href="/admin" className="flex items-center gap-2">
           <img src="/images/logo.jpg" alt="" className="w-8 h-8 rounded-full" />
           <span className="font-heritage">Aura Foods Admin</span>
@@ -94,14 +94,14 @@ export default function AdminNav() {
         </button>
       </div>
       {open && (
-        <div className="md:hidden fixed inset-x-0 top-[56px] bottom-0 z-40 overflow-y-auto bg-cinnamon text-cream p-4">
+        <div className="admin-mobile-menu md:hidden fixed inset-x-0 top-[56px] bottom-0 z-40 overflow-y-auto bg-cinnamon text-cream p-4">
           <NavLinks pathname={pathname} onNavigate={() => setOpen(false)} />
           <Footer />
         </div>
       )}
 
       {/* Desktop sidebar */}
-      <aside className="w-64 bg-cinnamon text-cream shrink-0 p-4 hidden md:block">
+      <aside className="sidebar w-64 bg-cinnamon text-cream shrink-0 p-4 hidden md:block">
         <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
           <Link href="/admin" className="flex items-center gap-2 mb-6">
             <img src="/images/logo.jpg" alt="" className="w-9 h-9 rounded-full" />

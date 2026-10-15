@@ -12,6 +12,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const [order] = await db.select().from(orders).where(eq(orders.id, Number(id) || 0));
   if (!order) return notFound();
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+  const showItemDelivery = items.some((item) => item.deliveryCharge > 0);
   const allPackaging = await db.select().from(packagingRecords);
   const allBatches = await db.select().from(finishedGoodsBatches);
 
@@ -26,7 +27,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm mb-6" id="invoice">
+      <div className="slip-container bg-white rounded-xl p-6 shadow-sm mb-6" id="invoice">
         <div className="flex items-center gap-2 mb-4">
           <img src="/images/logo.jpg" className="w-10 h-10 rounded-full" alt="Aura Foods" />
           <div><p className="font-heritage text-lg">Aura Foods</p><p className="text-xs opacity-60">Crafted for Pure Taste — Invoice</p></div>
@@ -38,10 +39,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         {order.customerEmail && <p className="text-sm mb-1"><b>Email:</b> {order.customerEmail}</p>}
         <p className="text-sm mb-3"><b>Address:</b> {order.customerAddress}{order.city ? `, ${order.city}` : ""}</p>
         <table className="w-full text-sm mb-3">
-          <thead><tr className="border-b text-left"><th className="py-1">Product</th><th className="py-1">Qty</th><th className="py-1 text-right">Price</th></tr></thead>
+          <thead><tr className="border-b text-left"><th className="py-1">Product</th><th className="py-1">Qty</th><th className="py-1 text-right">Price</th>{showItemDelivery && <th className="py-1 text-right">Delivery</th>}</tr></thead>
           <tbody>
             {items.map((i) => (
-              <tr key={i.id} className="border-b"><td className="py-1">{i.productNameSnapshot}{i.bundleId ? " (Bundle)" : ""}</td><td className="py-1">{i.quantity} × Rs. {i.unitPrice}</td><td className="py-1 text-right">Rs. {i.unitPrice * i.quantity}</td></tr>
+              <tr key={i.id} className="border-b"><td className="py-1">{i.productNameSnapshot}{i.bundleId ? " (Bundle)" : ""}</td><td className="py-1">{i.quantity} × Rs. {i.unitPrice}</td><td className="py-1 text-right">Rs. {i.unitPrice * i.quantity}</td>{showItemDelivery && <td className="py-1 text-right">Rs. {i.deliveryCharge}</td>}</tr>
             ))}
           </tbody>
         </table>

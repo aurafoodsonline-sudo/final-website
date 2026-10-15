@@ -1,8 +1,26 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Lang } from "@/lib/constants";
+import type { Metadata } from "next";
+import { Lang, SITE_URL } from "@/lib/constants";
 import { getBundleBySlug, getBundleItems } from "@/lib/data";
 import AddToCartButton from "@/components/AddToCartButton";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
+  const { lang, slug } = await params;
+  const bundle = await getBundleBySlug(slug);
+  if (!bundle || bundle.isHidden) return {};
+  const isUr = lang === "ur";
+  const title = isUr ? bundle.nameUr : bundle.nameEn;
+  const description = (isUr ? bundle.descriptionUr : bundle.descriptionEn) || title;
+  const url = `${SITE_URL}/${lang}/bundle/${slug}`;
+  return {
+    title,
+    description,
+    keywords: [title, isUr ? "مصالحہ بنڈل" : "spice bundle", isUr ? "آرگینک مصالحے" : "organic spices", isUr ? "آورا فوڈز" : "Aura Foods"],
+    alternates: { canonical: url },
+    openGraph: { title, description, type: "website", url },
+  };
+}
 
 export default async function BundlePage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
   const { lang: rawLang, slug } = await params;

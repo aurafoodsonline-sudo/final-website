@@ -121,6 +121,7 @@ export const orderItems = pgTable("order_items", {
   productNameSnapshot: text("product_name_snapshot").notNull(),
   quantity: integer("quantity").notNull(),
   unitPrice: doublePrecision("unit_price").notNull(),
+  deliveryCharge: doublePrecision("delivery_charge").notNull().default(0),
   packagingRecordId: integer("packaging_record_id"), // Stock Fulfilment link, see traceability
   bundleId: integer("bundle_id"),
 });

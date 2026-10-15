@@ -12,11 +12,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const p = await getProductBySlug(slug);
   if (!p || p.isHidden) return {};
   const isUr = lang === "ur";
+  const title = isUr ? p.metaTitleUr || p.nameUr : p.metaTitleEn || p.nameEn;
+  const description = (isUr ? p.metaDescriptionUr || p.taglineUr : p.metaDescriptionEn || p.taglineEn) || title;
   // Empty admin fields fall back to the product's own name/tagline/URL.
   return {
-    title: (isUr ? p.metaTitleUr || p.nameUr : p.metaTitleEn || p.nameEn),
-    description: (isUr ? p.metaDescriptionUr || p.taglineUr : p.metaDescriptionEn || p.taglineEn) || "",
+    title,
+    description,
+    keywords: [title, isUr ? "مصالحہ" : "spice", isUr ? "آرگینک مصالحے" : "organic spices", isUr ? "آورا فوڈز" : "Aura Foods"],
     alternates: { canonical: p.canonicalUrl || `${SITE_URL}/${lang}/product/${slug}` },
+    openGraph: { title, description, type: "website", url: `${SITE_URL}/${lang}/product/${slug}` },
     robots: p.noIndex ? { index: false } : undefined,
   };
 }
