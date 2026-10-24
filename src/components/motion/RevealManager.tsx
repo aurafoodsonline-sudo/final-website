@@ -119,6 +119,40 @@ function parallaxOne(el: HTMLElement) {
   );
 }
 
+/**
+ * 3D scroll depth (GSAP ScrollTrigger, scrubbed to the scroll position):
+ *   data-depth="card" (default) — the element tips toward the viewer as it scrolls in
+ *   data-depth="fold"           — a whole section folds in from its top edge (wide screens only)
+ * Every main > section gets "fold" automatically, unless it has data-no-depth.
+ * Kept light on purpose: only transforms are animated, and the strongest effect is desktop-only.
+ */
+function depthOne(el: HTMLElement, kind: string = el.dataset.depth ?? "card") {
+  if (el.dataset.depthDone) return;
+  el.dataset.depthDone = "1";
+  const wide = window.matchMedia("(min-width: 768px)").matches;
+
+  if (kind === "fold") {
+    if (!wide) return;
+    gsap.fromTo(
+      el,
+      { rotateX: 7, transformPerspective: 1600, transformOrigin: "50% 0%" },
+      { rotateX: 0, ease: "none", scrollTrigger: { trigger: el, start: "top 100%", end: "top 30%", scrub: true } },
+    );
+    return;
+  }
+
+  gsap.fromTo(
+    el,
+    { rotateX: wide ? 18 : 10, rotateY: wide ? 8 : 4, transformPerspective: 1100, transformOrigin: "50% 0%" },
+    {
+      rotateX: 0,
+      rotateY: 0,
+      ease: "none",
+      scrollTrigger: { trigger: el, start: "top 98%", end: "top 55%", scrub: 0.8 },
+    },
+  );
+}
+
 export default function RevealManager() {
   const pathname = usePathname();
 
@@ -136,6 +170,8 @@ export default function RevealManager() {
         assignAuto();
         document.querySelectorAll<HTMLElement>("[data-reveal]").forEach(revealOne);
         document.querySelectorAll<HTMLElement>("[data-speed]").forEach(parallaxOne);
+        document.querySelectorAll<HTMLElement>("main > section:not([data-no-depth])").forEach((el) => depthOne(el, "fold"));
+        document.querySelectorAll<HTMLElement>("[data-depth]").forEach((el) => depthOne(el));
       });
     scan();
 
@@ -159,10 +195,11 @@ export default function RevealManager() {
         delete n.dataset.reveal;
         delete n.dataset.revealAuto;
       });
-      document.querySelectorAll<HTMLElement>("[data-reveal-done],[data-reveal-child-done],[data-speed-done]").forEach((n) => {
+      document.querySelectorAll<HTMLElement>("[data-reveal-done],[data-reveal-child-done],[data-speed-done],[data-depth-done]").forEach((n) => {
         delete n.dataset.revealDone;
         delete n.dataset.revealChildDone;
         delete n.dataset.speedDone;
+        delete n.dataset.depthDone;
       });
     };
   }, [pathname]);

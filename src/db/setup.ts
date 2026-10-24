@@ -33,10 +33,11 @@ export async function seedIfNeeded() {
     await db.insert(settings).values({ key, value }).onConflictDoNothing();
   }
 
-  // Admin account: only when there is none. Password from ADMIN_PASSWORD if set.
+  // Admin account: only when there is none. ADMIN_PASSWORD is required.
   const admins = await db.select({ id: adminUsers.id }).from(adminUsers).limit(1);
   if (admins.length === 0) {
-    const password = process.env.ADMIN_PASSWORD || "AuraAdmin@2026";
+    const password = process.env.ADMIN_PASSWORD;
+    if (!password) throw new Error("ADMIN_PASSWORD must be set before creating the initial admin account.");
     await db.insert(adminUsers).values({ username: process.env.ADMIN_USERNAME || "admin", passwordHash: await bcrypt.hash(password, 10), name: "Aura Foods Admin" });
     console.log("[setup] Created the admin account. Change its password in Admin → Settings.");
   }

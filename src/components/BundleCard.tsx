@@ -7,7 +7,7 @@ import SpotlightCard from "./reactbits/SpotlightCard";
 export default function BundleCard({ bundle, lang }: { bundle: any; lang: Lang }) {
   const name = lang === "ur" ? bundle.nameUr : bundle.nameEn;
   return (
-    <Link href={`/${lang}/bundle/${bundle.slug}`} className="group block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-chili">
+    <Link data-depth="card" href={`/${lang}/bundle/${bundle.slug}`} className="group block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-chili">
       <SpotlightCard
         spotlightColor="rgba(107, 142, 78, 0.28)"
         className="h-full rounded-2xl border border-cinnamon/10 bg-cardamom/10 transition-[transform,box-shadow] duration-500 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_22px_45px_-22px_rgba(74,44,29,0.55)]"

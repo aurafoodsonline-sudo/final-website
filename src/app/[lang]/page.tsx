@@ -57,7 +57,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
   return (
     <main>
-      <section className="relative overflow-hidden bg-[#FBF3E7]">
+      <section data-no-depth className="relative overflow-hidden bg-[#FBF3E7]">
         <HeroMotion
           className="relative mx-auto w-full max-w-6xl aspect-[1122/1402] overflow-hidden rounded-[2rem]"
           image={

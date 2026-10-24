@@ -46,8 +46,8 @@ build so it runs anywhere with zero external services — swap to Postgres later
 Postgres/Coolify plan). Data lives in `data/aura.db`, already seeded.
 
 ## Admin login
-`/admin/login` — username `admin`, password `AuraAdmin@2026`. Change this before going live
-(see `src/db/seed.ts`, or add a "change password" screen — not yet built, see Gaps below).
+`/admin/login` — set `ADMIN_USERNAME` and `ADMIN_PASSWORD` before the first startup to create
+the initial admin account. Choose a unique password and keep it out of source control.
 
 ## What's built and working end-to-end
 - **Bilingual EN/UR storefront** with proper RTL for Urdu, EN/اردو switcher, real content

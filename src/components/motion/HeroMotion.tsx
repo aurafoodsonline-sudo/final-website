@@ -5,7 +5,7 @@ import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 
 /**
  * Hero stage: the banner image slowly zooms out and drifts as you scroll, while the
- * copy floats up and fades — a cinematic parallax exit into the page.
+ * copy floats up and fades — a cinematic parallax exit into the page, with a 3D tilt on wide screens.
  */
 export default function HeroMotion({ image, children, className = "" }: { image: ReactNode; children: ReactNode; className?: string }) {
   const root = useRef<HTMLDivElement>(null);
@@ -18,6 +18,16 @@ export default function HeroMotion({ image, children, className = "" }: { image:
       });
       tl.fromTo("[data-hero-img]", { scale: 1.12, yPercent: 0 }, { scale: 1, yPercent: 8, ease: "none" }, 0)
         .to("[data-hero-copy]", { yPercent: -35, autoAlpha: 0, ease: "none" }, 0);
+
+      // 3D: on wide screens the banner also tilts back into depth as you scroll away from it.
+      if (window.matchMedia("(min-width: 768px)").matches) {
+        tl.fromTo(
+          "[data-hero-img]",
+          { rotateX: 0, transformPerspective: 1400, transformOrigin: "50% 0%" },
+          { rotateX: 14, ease: "none" },
+          0,
+        );
+      }
 
       // Intro: image settles in on load.
       gsap.from("[data-hero-img]", { autoAlpha: 0, duration: 1.4, ease: "power2.out" });

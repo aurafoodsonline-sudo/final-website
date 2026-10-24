@@ -23,6 +23,9 @@ import SiteProvider from "@/components/SiteProvider";
 // fonts.googleapis.com — falls back cleanly to the system stacks in globals.css if the
 // deployment environment has no outbound internet access to Google Fonts.
 
+const GOOGLE_FONTS_HREF =
+  "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap";
+
 // Every page reads products, prices and text from the database, so pages are rendered on
 // each visit (no copies baked in at build time, and the build needs no database).
 export const dynamic = "force-dynamic";
@@ -88,9 +91,20 @@ export default async function LangLayout({ children, params }: { children: React
         <script dangerouslySetInnerHTML={{ __html: MOTION_BOOT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Non-blocking: the stylesheet loads after first paint instead of delaying it. The
+            <noscript> copy keeps the same fonts for visitors without JavaScript. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap"
           rel="stylesheet"
+          href={GOOGLE_FONTS_HREF}
+          media="print"
+        />
+        <noscript>
+          <link rel="stylesheet" href={GOOGLE_FONTS_HREF} />
+        </noscript>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var l=document.querySelector('link[href="${GOOGLE_FONTS_HREF}"][media="print"]');if(l){l.addEventListener('load',function(){l.media='all'});if(l.sheet)l.media='all'}})();`,
+          }}
         />
       </head>
       <body className="font-body">

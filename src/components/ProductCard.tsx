@@ -19,7 +19,7 @@ export default function ProductCard({ p, lang }: { p: any; lang: Lang }) {
     p.websiteStockStatus === "out_of_stock" ? d.out_of_stock :
     p.websiteStockStatus === "limited" ? d.limited_stock : null;
   return (
-    <Link href={`/${lang}/product/${p.slug}`} className="group block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-chili">
+    <Link data-depth="card" href={`/${lang}/product/${p.slug}`} className="group block h-full rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-chili">
       <SpotlightCard
         spotlightColor="rgba(232, 163, 61, 0.28)"
         className="h-full rounded-2xl border border-cinnamon/10 bg-white/75 transition-[transform,box-shadow] duration-500 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_22px_45px_-22px_rgba(74,44,29,0.55)]"

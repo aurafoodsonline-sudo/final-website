@@ -12,7 +12,7 @@ never lose data.
 |---|---|
 | `DATABASE_URL` | Coolify → your PostgreSQL resource → copy **Postgres URL (internal)** |
 | `SESSION_SECRET` | any long random text (keeps admins logged in across restarts) |
-| `ADMIN_PASSWORD` | optional — password for the first admin account on an empty database |
+| `ADMIN_PASSWORD` | required before first startup on an empty database — password for the first admin account |
 
 The app and the database must be on the same Coolify server/network for the internal URL
 to work (they are when both were created in the same project/environment).
@@ -48,8 +48,8 @@ the database. FAQ/blog/policy content and messages are untouched.
 
 ## 4. After the first deploy
 
-- Log in at `/admin` (default `admin` / `AuraAdmin@2026` unless `ADMIN_PASSWORD` was set)
-  and change the password in **Settings & Delivery**.
+- Log in at `/admin` using the `ADMIN_USERNAME` and `ADMIN_PASSWORD` configured before the
+  first startup. Change the password in **Settings & Delivery** after logging in.
 - **Settings & Delivery**: business details, WhatsApp number, social links (footer icons),
   delivery charge and free-delivery amount.
 - **Website Content**: FAQ, blog, testimonials, home "Why Aura Foods", About values.
