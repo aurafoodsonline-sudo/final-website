@@ -34,12 +34,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
-  const d = await getT(lang);
-  const products = await getAllProducts();
-  const site = await getSiteInfo();
-  const why = await getContent("why");
-  const testimonials = await getContent("testimonial");
-  const bundles = await getAllBundles();
+  const [d, products, site, why, testimonials, bundles] = await Promise.all([
+    getT(lang), getAllProducts(), getSiteInfo(), getContent("why"), getContent("testimonial"), getAllBundles(),
+  ]);
   const bestSellers = products.filter((p) => p.bestSeller);
   const newArrivals = products.filter((p) => p.newArrival);
   const ur = lang === "ur";
@@ -67,7 +64,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
               width={922}
               height={1152}
               priority
-              sizes="100vw"
+              sizes="(max-width: 1152px) 100vw, 1152px"
               className="hero-banner-fade absolute inset-0 h-full w-full object-contain"
             />
           }

@@ -25,7 +25,7 @@ export default function ProductCard({ p, lang }: { p: any; lang: Lang }) {
         className="h-full rounded-2xl border border-cinnamon/10 bg-white/75 transition-[transform,box-shadow] duration-500 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_22px_45px_-22px_rgba(74,44,29,0.55)]"
       >
       <div className="relative aspect-square overflow-hidden bg-cream">
-        <Image src={image} unoptimized={image.startsWith("/uploads/")} alt={alt} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" />
+        <Image src={image} alt={alt} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" />
         {p.bestSeller ? <span className="absolute top-2 left-2 bg-chili text-white text-xs px-2 py-1 rounded-full">{d.best_sellers}</span> : null}
         {stockBadge ? <span className="absolute top-2 right-2 bg-cinnamon text-white text-xs px-2 py-1 rounded-full">{stockBadge}</span> : null}
       </div>

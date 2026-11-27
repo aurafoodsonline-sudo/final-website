@@ -17,7 +17,7 @@ export default async function BlogPage({ params }: { params: Promise<{ lang: str
           const category = (lang === "ur" ? p.extraUr || p.extraEn : p.extraEn) ?? "";
           return (
             <div key={p.id} className="group rounded-2xl bg-white/70 overflow-hidden border border-cinnamon/10 transition-[transform,box-shadow] duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_45px_-22px_rgba(74,44,29,0.55)]">
-              <div className="relative aspect-video overflow-hidden"><Image src={image} unoptimized={image.startsWith("/uploads/")} alt={title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.07]" /></div>
+              <div className="relative aspect-video overflow-hidden"><Image src={image} alt={title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.07]" /></div>
               <div className="p-4">
                 <p className="text-xs text-chili mb-1">{[category, p.meta].filter(Boolean).join(" · ")}</p>
                 <h3 className="font-heritage text-lg mb-1">{title}</h3>

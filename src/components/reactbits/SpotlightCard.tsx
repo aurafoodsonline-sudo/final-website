@@ -2,12 +2,7 @@
 
 // From React Bits (https://reactbits.dev) by David Haz — MIT + Commons Clause, see ./LICENSE.md.
 // Local tweaks for Aura Foods are marked with "AURA:".
-import React, { useRef, useState } from 'react';
-
-interface Position {
-  x: number;
-  y: number;
-}
+import React, { useEffect, useRef, useState } from 'react';
 
 interface SpotlightCardProps extends React.PropsWithChildren {
   className?: string;
@@ -21,14 +16,28 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
 }) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const pointer = useRef({ x: 0, y: 0 });
+  const frame = useRef<number | null>(null);
   const [opacity, setOpacity] = useState<number>(0);
 
-  const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = e => {
-    if (!divRef.current || isFocused) return;
+  useEffect(() => () => {
+    if (frame.current !== null) cancelAnimationFrame(frame.current);
+  }, []);
 
-    const rect = divRef.current.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = e => {
+    if (isFocused) return;
+    pointer.current = { x: e.clientX, y: e.clientY };
+    if (frame.current !== null) return;
+
+    // Update the gradient at most once per display frame without re-rendering the card.
+    frame.current = requestAnimationFrame(() => {
+      frame.current = null;
+      const card = divRef.current;
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--spotlight-x', `${pointer.current.x - rect.left}px`);
+      card.style.setProperty('--spotlight-y', `${pointer.current.y - rect.top}px`);
+    });
   };
 
   const handleFocus = () => {
@@ -63,7 +72,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out"
         style={{
           opacity,
-          background: `radial-gradient(circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 80%)`
+          background: `radial-gradient(circle at var(--spotlight-x, 0px) var(--spotlight-y, 0px), ${spotlightColor}, transparent 80%)`
         }}
       />
       {children}

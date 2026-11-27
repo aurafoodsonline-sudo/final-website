@@ -61,7 +61,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="grid md:grid-cols-2 gap-10">
         <div data-reveal="clip" className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-[0_30px_60px_-35px_rgba(74,44,29,0.6)]">
-          <Image src={image} unoptimized={image.startsWith("/uploads/")} alt={alt} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+          <Image src={image} alt={alt} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
         </div>
         <div>
           <h1 data-reveal="up" className="font-heritage text-3xl md:text-4xl mb-1">{name}</h1>

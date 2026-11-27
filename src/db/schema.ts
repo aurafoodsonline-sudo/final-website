@@ -1,4 +1,4 @@
-import { pgTable, text, integer, doublePrecision, serial, customType } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, doublePrecision, serial, customType, index } from "drizzle-orm/pg-core";
 
 // Raw bytes column (PostgreSQL "bytea") used to keep uploaded images inside the database.
 const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
@@ -19,7 +19,7 @@ export const products = pgTable("products", {
   id: serial("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   sku: text("sku").notNull().unique(),
-  categoryId: integer("category_id").notNull(),
+  categoryId: integer("category_id").notNull().references(() => categories.id),
   nameEn: text("name_en").notNull(),
   nameUr: text("name_ur").notNull(),
   taglineEn: text("tagline_en"),
@@ -60,7 +60,9 @@ export const products = pgTable("products", {
   noIndex: integer("no_index").default(0),
   imageAltEn: text("image_alt_en"),
   imageAltUr: text("image_alt_ur"),
-});
+}, (table) => [
+  index("products_category_idx").on(table.categoryId),
+]);
 
 export const bundles = pgTable("bundles", {
   id: serial("id").primaryKey(),
@@ -78,10 +80,13 @@ export const bundles = pgTable("bundles", {
 
 export const bundleItems = pgTable("bundle_items", {
   id: serial("id").primaryKey(),
-  bundleId: integer("bundle_id").notNull(),
-  productId: integer("product_id").notNull(),
+  bundleId: integer("bundle_id").notNull().references(() => bundles.id),
+  productId: integer("product_id").notNull().references(() => products.id),
   quantity: integer("quantity").notNull().default(1),
-});
+}, (table) => [
+  index("bundle_items_bundle_idx").on(table.bundleId),
+  index("bundle_items_product_idx").on(table.productId),
+]);
 
 // ---------------------------------------------------------------------------
 // ORDERS — one unified table for website + every manual/offline channel
@@ -116,7 +121,7 @@ export const orders = pgTable("orders", {
 
 export const orderItems = pgTable("order_items", {
   id: serial("id").primaryKey(),
-  orderId: integer("order_id").notNull(),
+  orderId: integer("order_id").notNull().references(() => orders.id),
   productId: integer("product_id"),
   productNameSnapshot: text("product_name_snapshot").notNull(),
   quantity: integer("quantity").notNull(),
@@ -124,22 +129,27 @@ export const orderItems = pgTable("order_items", {
   deliveryCharge: doublePrecision("delivery_charge").notNull().default(0),
   packagingRecordId: integer("packaging_record_id"), // Stock Fulfilment link, see traceability
   bundleId: integer("bundle_id"),
-});
+}, (table) => [
+  index("order_items_order_idx").on(table.orderId),
+]);
 
 // ---------------------------------------------------------------------------
 // REVIEWS (verified purchase, locked after submit)
 // ---------------------------------------------------------------------------
 export const reviews = pgTable("reviews", {
   id: serial("id").primaryKey(),
-  productId: integer("product_id").notNull(),
+  productId: integer("product_id").notNull().references(() => products.id),
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
   rating: integer("rating").notNull(),
   body: text("body").notNull(),
-  verifiedOrderId: integer("verified_order_id").notNull(),
+  verifiedOrderId: integer("verified_order_id").notNull().references(() => orders.id),
   status: text("status").notNull().default("pending"), // pending|approved|rejected
   createdAt: text("created_at").notNull(),
-});
+}, (table) => [
+  index("reviews_product_status_date_idx").on(table.productId, table.status, table.createdAt),
+  index("reviews_order_idx").on(table.verifiedOrderId),
+]);
 
 // ---------------------------------------------------------------------------
 // SUPPLIERS / RAW MATERIAL / PRODUCTION / TRACEABILITY (Phase 2, Sections 6.3-6.8)
@@ -276,7 +286,9 @@ export const contentItems = pgTable("content_items", {
   meta: text("meta"), // blog read time, e.g. "5 min"
   image: text("image"),
   isHidden: integer("is_hidden").notNull().default(0),
-});
+}, (table) => [
+  index("content_items_kind_visibility_order_idx").on(table.kind, table.isHidden, table.sortOrder, table.id),
+]);
 
 // Simple pages (privacy, returns, shipping, terms) edited from Admin → Pages.
 export const pages = pgTable("pages", {

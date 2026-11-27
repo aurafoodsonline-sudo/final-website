@@ -5,7 +5,8 @@ import {
   packagingRecords, products, reviews, bundles, bundleItems, orderItems, settings,
 } from "@/db/schema";
 import { and, eq, ne, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_CACHE_TAG } from "@/lib/storefront-cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { saveUploadedImage } from "@/lib/uploads";
@@ -44,6 +45,7 @@ export async function slugify(value: string) {
 }
 // Storefront pages are cached; this refreshes all of them after a catalog change.
 function refreshSite() {
+  revalidateTag(STOREFRONT_CACHE_TAG);
   revalidatePath("/", "layout");
 }
 async function imageFromForm(fd: FormData, prefix: string, backTo: string) {

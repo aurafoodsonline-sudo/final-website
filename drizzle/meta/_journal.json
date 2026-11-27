@@ -15,6 +15,13 @@
       "when": 1792076400000,
       "tag": "0001_add_item_delivery_charge",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795790679279,
+      "tag": "0002_storefront_relationships",
+      "breakpoints": true
     }
   ]
 }

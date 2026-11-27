@@ -1,6 +1,7 @@
 import { cache } from "react";
-import { asc, and, eq, like } from "drizzle-orm";
+import { asc, and, eq, inArray, like } from "drizzle-orm";
 import { db } from "@/db";
+import { cacheStorefront } from "@/lib/storefront-cache";
 import { settings, contentItems, pages } from "@/db/schema";
 import { DICT, type Lang, type Dict } from "@/lib/constants";
 import { DEFAULT_DELIVERY_RATES, parseRate, type DeliveryRates } from "@/lib/pricing";
@@ -19,7 +20,7 @@ const getAllSettings = cache(async () => {
   return new Map(rows.map((r) => [r.key, r.value]));
 });
 
-export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
+export const getSiteInfo = cache(cacheStorefront("site-info", async (): Promise<SiteInfo> => {
   const s = await getAllSettings();
   const get = (k: string, fallback = "") => (s.get(k) ?? fallback).trim();
   const whatsapp = get("whatsapp").replace(/\D/g, "");
@@ -39,11 +40,11 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       freeDeliveryFrom: parseRate(s.get("free_delivery_from"), DEFAULT_DELIVERY_RATES.freeDeliveryFrom),
     },
   };
-});
+}));
 
 // Website wording: the built-in English/Urdu text, with any changes made in
 // Admin → Website Text (stored as settings "text.en.<key>" / "text.ur.<key>").
-export const getT = cache(async (lang: Lang): Promise<Dict> => {
+export const getT = cache(cacheStorefront("translations", async (lang: Lang): Promise<Dict> => {
   const rows = await db.select().from(settings).where(like(settings.key, `text.${lang}.%`));
   const base = { ...DICT[lang] } as Record<string, string>;
   for (const r of rows) {
@@ -51,17 +52,28 @@ export const getT = cache(async (lang: Lang): Promise<Dict> => {
     if (key in base && key !== "dir" && r.value.trim()) base[key] = r.value;
   }
   return base as Dict;
-});
+}));
 
 export type ContentKind = "faq" | "testimonial" | "why" | "value" | "blog";
 
-export const getContent = cache(async (kind: ContentKind) => {
+export const getContent = cache(cacheStorefront("content", async (kind: ContentKind) => {
   return db.select().from(contentItems)
     .where(and(eq(contentItems.kind, kind), eq(contentItems.isHidden, 0)))
     .orderBy(asc(contentItems.sortOrder), asc(contentItems.id));
-});
+}));
 
 export const getPage = cache(async (slug: string) => {
   const [row] = await db.select().from(pages).where(eq(pages.slug, slug));
   return row ?? null;
+});
+
+const FOOTER_POLICY_SLUGS = ["privacy-policy", "return-policy", "shipping-policy", "terms"];
+
+export const getFooterPolicies = cacheStorefront("footer-policies", async () => {
+  const rows = await db.select({
+    slug: pages.slug,
+    titleEn: pages.titleEn,
+    titleUr: pages.titleUr,
+  }).from(pages).where(inArray(pages.slug, FOOTER_POLICY_SLUGS));
+  return FOOTER_POLICY_SLUGS.flatMap((slug) => rows.filter((row) => row.slug === slug));
 });

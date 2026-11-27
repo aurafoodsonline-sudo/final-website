@@ -3,10 +3,9 @@ import Image from "next/image";
 import type { ComponentType } from "react";
 import type { IconType } from "react-icons";
 import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp, FaYoutube } from "react-icons/fa6";
-import { getT, getSiteInfo, getPage } from "@/lib/site";
+import { getT, getSiteInfo, getFooterPolicies } from "@/lib/site";
 import { Lang } from "@/lib/constants";
 
-const POLICY_SLUGS = ["privacy-policy", "return-policy", "shipping-policy", "terms"];
 
 function DarazLogo({ className }: { className?: string }) {
   return (
@@ -25,10 +24,8 @@ function DarazLogo({ className }: { className?: string }) {
 }
 
 export default async function Footer({ lang }: { lang: Lang }) {
-  const d = await getT(lang);
-  const site = await getSiteInfo();
+  const [d, site, policies] = await Promise.all([getT(lang), getSiteInfo(), getFooterPolicies()]);
   const ur = lang === "ur";
-  const policies = (await Promise.all(POLICY_SLUGS.map((slug) => getPage(slug)))).filter((p) => p !== null);
 
   // Social links come from Admin → Settings; an empty link hides its icon.
   const socials: { href: string; label: string; Icon: IconType | ComponentType<{ className?: string }> }[] = [

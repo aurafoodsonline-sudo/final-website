@@ -1,24 +1,26 @@
+import { cache } from "react";
+import { cacheStorefront } from "./storefront-cache";
 import { db } from "../db";
 import { categories, products, bundles, bundleItems, orders, orderItems, reviews, settings } from "../db/schema";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { eq, and, sql, desc, inArray } from "drizzle-orm";
 import { DEFAULT_DELIVERY_RATES, DELIVERY_CHARGE_KEY, FREE_DELIVERY_FROM_KEY, parseRate, type DeliveryRates } from "./pricing";
 
-export async function getCategories() {
+export const getCategories = cache(cacheStorefront("categories", async () => {
   return db.select().from(categories).orderBy(categories.sortOrder);
-}
+}));
 
-export async function getAllProducts() {
+export const getAllProducts = cache(cacheStorefront("visible-products", async () => {
   return db.select().from(products).where(eq(products.isHidden, 0));
-}
+}));
 
-export async function getAllBundles() {
+export const getAllBundles = cache(cacheStorefront("visible-bundles", async () => {
   return db.select().from(bundles).where(eq(bundles.isHidden, 0));
-}
+}));
 
-export async function getBundleBySlug(slug: string) {
+export const getBundleBySlug = cache(async (slug: string) => {
   const rows = await db.select().from(bundles).where(eq(bundles.slug, slug));
   return rows[0] ?? null;
-}
+});
 
 export async function getBundleItems(bundleId: number) {
   return db.select({ item: bundleItems, product: products })
@@ -27,10 +29,10 @@ export async function getBundleItems(bundleId: number) {
     .where(eq(bundleItems.bundleId, bundleId));
 }
 
-export async function getProductBySlug(slug: string) {
+export const getProductBySlug = cache(async (slug: string) => {
   const rows = await db.select().from(products).where(eq(products.slug, slug));
   return rows[0] ?? null;
-}
+});
 
 export async function getSetting(key: string, fallback = "") {
   const rows = await db.select().from(settings).where(eq(settings.key, key));
@@ -39,9 +41,12 @@ export async function getSetting(key: string, fallback = "") {
 
 // Current delivery fee + free-delivery limit, as set in Admin → Settings.
 export async function getDeliveryRates(): Promise<DeliveryRates> {
+  const rows = await db.select().from(settings)
+    .where(inArray(settings.key, [DELIVERY_CHARGE_KEY, FREE_DELIVERY_FROM_KEY]));
+  const rates = new Map(rows.map(({ key, value }) => [key, value]));
   return {
-    deliveryCharge: parseRate(await getSetting(DELIVERY_CHARGE_KEY), DEFAULT_DELIVERY_RATES.deliveryCharge),
-    freeDeliveryFrom: parseRate(await getSetting(FREE_DELIVERY_FROM_KEY), DEFAULT_DELIVERY_RATES.freeDeliveryFrom),
+    deliveryCharge: parseRate(rates.get(DELIVERY_CHARGE_KEY), DEFAULT_DELIVERY_RATES.deliveryCharge),
+    freeDeliveryFrom: parseRate(rates.get(FREE_DELIVERY_FROM_KEY), DEFAULT_DELIVERY_RATES.freeDeliveryFrom),
   };
 }
 

@@ -32,7 +32,7 @@ export default async function BundlePage({ params }: { params: Promise<{ lang: s
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
       <div className="grid md:grid-cols-2 gap-10">
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-white"><Image src={bundle.image || "/images/logo.jpg"} unoptimized={(bundle.image ?? "").startsWith("/uploads/")} alt={name} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" /></div>
+        <div className="relative aspect-square rounded-2xl overflow-hidden bg-white"><Image src={bundle.image || "/images/logo.jpg"} alt={name} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" /></div>
         <div>
           <p className="text-cardamom font-medium mb-2">{lang === "ur" ? "خصوصی بنڈل" : "Special bundle"}</p>
           <h1 className="font-heritage text-3xl mb-3">{name}</h1>

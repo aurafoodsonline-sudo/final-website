@@ -1,7 +1,8 @@
 "use server";
 import bcrypt from "bcryptjs";
 import { and, eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { STOREFRONT_CACHE_TAG } from "@/lib/storefront-cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { adminUsers, contentItems, messages, pages, settings } from "@/db/schema";
@@ -24,6 +25,7 @@ function text(fd: FormData, key: string) {
   return String(fd.get(key) ?? "").trim();
 }
 function refreshSite() {
+  revalidateTag(STOREFRONT_CACHE_TAG);
   revalidatePath("/", "layout");
 }
 async function upsertSetting(key: string, value: string) {

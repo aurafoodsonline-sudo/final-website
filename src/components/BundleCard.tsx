@@ -13,7 +13,7 @@ export default function BundleCard({ bundle, lang }: { bundle: any; lang: Lang }
         className="h-full rounded-2xl border border-cinnamon/10 bg-cardamom/10 transition-[transform,box-shadow] duration-500 ease-out group-hover:-translate-y-1.5 group-hover:shadow-[0_22px_45px_-22px_rgba(74,44,29,0.55)]"
       >
       <div className="relative aspect-square overflow-hidden bg-cream">
-        <Image src={bundle.image || "/images/logo.jpg"} unoptimized={String(bundle.image ?? "").startsWith("/uploads/")} alt={name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" />
+        <Image src={bundle.image || "/images/logo.jpg"} alt={name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]" />
         <span className="absolute top-2 left-2 bg-cardamom text-white text-xs px-2 py-1 rounded-full">{lang === "ur" ? "بنڈل" : "Bundle"}</span>
       </div>
       <div className="p-4">

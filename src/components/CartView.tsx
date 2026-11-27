@@ -44,7 +44,7 @@ export default function CartView({ lang }: { lang: Lang }) {
           return (
             <div key={key} className="flex items-center gap-4 bg-white/70 rounded-xl p-3 text-start">
               <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-cream">
-                <Image src={i.image || "/images/logo.jpg"} unoptimized={(i.image ?? "").startsWith("/uploads/")} alt={i.name} fill sizes="64px" className="object-cover" />
+                <Image src={i.image || "/images/logo.jpg"} alt={i.name} fill sizes="64px" className="object-cover" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium break-words">{i.name}</p>

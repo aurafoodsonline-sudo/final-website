@@ -7,10 +7,9 @@ import AnimatedTitle from "@/components/motion/AnimatedTitle";
 export default async function ShopPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
-  const d = await getT(lang);
-  const products = await getAllProducts();
-  const bundles = await getAllBundles();
-  const categories = await getCategories();
+  const [d, products, bundles, categories] = await Promise.all([
+    getT(lang), getAllProducts(), getAllBundles(), getCategories(),
+  ]);
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-12">

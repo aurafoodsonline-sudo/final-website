@@ -26,8 +26,8 @@ import SiteProvider from "@/components/SiteProvider";
 const GOOGLE_FONTS_HREF =
   "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@600;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap";
 
-// Every page reads products, prices and text from the database, so pages are rendered on
-// each visit (no copies baked in at build time, and the build needs no database).
+// Render per request so the build needs no database. Shared public reads use the
+// storefront data cache, which is invalidated by the admin actions.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -65,8 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function LangLayout({ children, params }: { children: React.ReactNode; params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const l = (lang === "ur" ? "ur" : "en") as Lang;
-  const dict = await getT(l);
-  const site = await getSiteInfo();
+  const [dict, site] = await Promise.all([getT(l), getSiteInfo()]);
 
   const jsonLd = {
     "@context": "https://schema.org",
