@@ -4,6 +4,7 @@ import { orders, orderItems } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import PrintButton from "./PrintButton";
+import DownloadSlip from "./DownloadSlip";
 import { packagingRecords, finishedGoodsBatches } from "@/db/schema";
 import { linkOrderItemToPackaging } from "@/lib/admin-actions";
 
@@ -18,11 +19,34 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="max-w-2xl">
-      <Link href="/admin/orders" className="text-sm underline print:hidden">← Back to orders</Link>
+      <Link href="/admin/orders" className="text-sm underline print:hidden">Orders list</Link>
       <div className="flex flex-wrap items-center justify-between gap-3 mt-2 mb-4 print:hidden">
         <h1 className="font-heritage text-2xl">Order {order.orderNumber}</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <a href={`https://wa.me/${order.customerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(`Assalam-o-Alaikum ${order.customerName}, this is Aura Foods about your order #${order.orderNumber}.`)}`} target="_blank" rel="noreferrer" className="bg-cardamom text-white px-4 py-2 rounded-full text-sm">WhatsApp customer</a>
+          <DownloadSlip slip={{
+            number: order.orderNumber,
+            fields: [
+              ["Order #", order.orderNumber],
+              ["Date", order.createdAt.slice(0, 10)],
+              ["Source", order.source],
+              ["Customer", order.customerName + " — " + order.customerPhone],
+              ...(order.customerEmail ? [["Email", order.customerEmail] as [string, string]] : []),
+              ["Address", order.customerAddress + (order.city ? ", " + order.city : "")],
+            ],
+            items: items.map((item) => ({
+              name: item.productNameSnapshot + (item.bundleId ? " (Bundle)" : ""),
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              delivery: item.deliveryCharge,
+            })),
+            totals: [
+              ["Subtotal", "Rs. " + order.subtotal],
+              ["Discount", "-Rs. " + (order.discount ?? 0)],
+              ["Delivery", "Rs. " + (order.deliveryCharges ?? 0)],
+              ["Total", "Rs. " + order.total],
+            ],
+          }} />
           <PrintButton />
         </div>
       </div>
