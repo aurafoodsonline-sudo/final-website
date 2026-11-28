@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Lang } from "@/lib/constants";
 import { notFound } from "next/navigation";
@@ -7,7 +8,12 @@ import { deliveryRuleText } from "@/lib/pricing";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; slug: string }> }): Promise<Metadata> {
   const { lang, slug } = await params;
   const page = await getPage(slug);
-  return page ? { title: lang === "ur" ? page.titleUr : page.titleEn } : {};
+  if (!page) return {};
+  const locale = lang === "ur" ? "ur" : "en";
+  const title = locale === "ur" ? page.titleUr || page.titleEn : page.titleEn;
+  const body = locale === "ur" ? page.bodyUr || page.bodyEn : page.bodyEn;
+  const description = body.replaceAll("{delivery_rule}", "").replace(/\s+/g, " ").trim().slice(0, 160);
+  return pageMetadata(locale, "/policy/" + encodeURIComponent(slug), { title, description });
 }
 
 // Policy pages are edited in Admin → Pages. "{delivery_rule}" in the text is replaced with

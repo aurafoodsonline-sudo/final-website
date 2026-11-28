@@ -4,6 +4,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSiteInfo } from "@/lib/site";
 
+export const metadata = { robots: { index: false, follow: true } };
+
 export default async function OrderConfirmedPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ ref?: string; phone?: string; wa?: string; total?: string }> }) {
   const { lang: rawLang } = await params;
   const { ref, phone, wa, total } = await searchParams;

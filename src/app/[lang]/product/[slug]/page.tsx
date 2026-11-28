@@ -1,7 +1,8 @@
+import { breadcrumbs, pageMetadata, pageUrl, structuredData, webUrl } from "@/lib/seo";
 import { getT } from "@/lib/site";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { Lang, t, SITE_URL } from "@/lib/constants";
+import { Lang, t, SITE_NAME } from "@/lib/constants";
 import { getProductBySlug, getApprovedReviews } from "@/lib/data";
 import { notFound } from "next/navigation";
 import ProductPurchase from "@/components/ProductPurchase";
@@ -15,14 +16,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const title = isUr ? p.metaTitleUr || p.nameUr : p.metaTitleEn || p.nameEn;
   const description = (isUr ? p.metaDescriptionUr || p.taglineUr : p.metaDescriptionEn || p.taglineEn) || title;
   // Empty admin fields fall back to the product's own name/tagline/URL.
-  return {
-    title,
-    description,
-    keywords: [title, isUr ? "مصالحہ" : "spice", isUr ? "آرگینک مصالحے" : "organic spices", isUr ? "آورا فوڈز" : "Aura Foods"],
-    alternates: { canonical: p.canonicalUrl || `${SITE_URL}/${lang}/product/${slug}` },
-    openGraph: { title, description, type: "website", url: `${SITE_URL}/${lang}/product/${slug}` },
-    robots: p.noIndex ? { index: false } : undefined,
-  };
+  return pageMetadata(isUr ? "ur" : "en", "/product/" + encodeURIComponent(slug), {
+    title, description, image: p.image, canonical: p.canonicalUrl, noIndex: Boolean(p.noIndex),
+  });
 }
 
 export default async function ProductPage({ params, searchParams }: { params: Promise<{ lang: string; slug: string }>; searchParams: Promise<{ review?: string }> }) {
@@ -46,19 +42,25 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
   const grammageOptions = parseGrammageOptions(p.grammageOptions, p.weightLabel, p.price);
   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
 
+  const path = "/product/" + encodeURIComponent(slug);
+  const url = webUrl(p.canonicalUrl) ?? pageUrl(lang, path);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name,
-    image: `${SITE_URL}${image}`,
+    image: webUrl(image),
+    url,
+    sku: p.sku,
+    brand: { "@type": "Brand", name: SITE_NAME },
     description: lang === "ur" ? p.descriptionUr : p.descriptionEn,
-    offers: { "@type": "Offer", price: grammageOptions[0]?.price ?? p.price, priceCurrency: "PKR", availability: p.websiteStockStatus === "out_of_stock" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock" },
+    offers: { "@type": "Offer", url, price: grammageOptions[0]?.price ?? p.price, priceCurrency: "PKR", availability: p.websiteStockStatus === "out_of_stock" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock" },
     ...(avgRating ? { aggregateRating: { "@type": "AggregateRating", ratingValue: avgRating, reviewCount: reviews.length } } : {}),
   };
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData(breadcrumbs(lang, { name: d.nav_shop, path: "/shop" }, { name, path })) }} />
       <div className="grid md:grid-cols-2 gap-10">
         <div data-reveal="clip" className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-[0_30px_60px_-35px_rgba(74,44,29,0.6)]">
           <Image src={image} alt={alt} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />

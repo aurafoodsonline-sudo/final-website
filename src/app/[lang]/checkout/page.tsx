@@ -2,6 +2,8 @@ import { getT } from "@/lib/site";
 import { Lang, t } from "@/lib/constants";
 import CheckoutForm from "./CheckoutForm";
 
+export const metadata = { robots: { index: false, follow: true } };
+
 export default async function CheckoutPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;

@@ -1,5 +1,13 @@
+import { pageMetadata } from "@/lib/seo";
 import { getT } from "@/lib/site";
 import { Lang, t } from "@/lib/constants";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const lang = (await params).lang === "ur" ? "ur" : "en";
+  return pageMetadata(lang, "/support", lang === "ur"
+    ? { title: "کسٹمر سپورٹ", description: "اپنے آرڈر یا ڈیلیوری کے لیے آورا فوڈز سپورٹ سے مدد حاصل کریں۔" }
+    : { title: "Customer Support", description: "Contact Aura Foods support for help with your order or delivery." });
+}
 
 export default async function SupportPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ sent?: string; error?: string }> }) {
   const { lang: rawLang } = await params;

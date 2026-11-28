@@ -1,5 +1,13 @@
+import { pageMetadata } from "@/lib/seo";
 import { getT, getSiteInfo } from "@/lib/site";
 import { Lang } from "@/lib/constants";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const lang = (await params).lang === "ur" ? "ur" : "en";
+  return pageMetadata(lang, "/contact", lang === "ur"
+    ? { title: "آورا فوڈز سے رابطہ کریں", description: "مصنوعات، آرڈر یا ڈیلیوری کے بارے میں آورا فوڈز سے رابطہ کریں۔" }
+    : { title: "Contact Aura Foods", description: "Find Aura Foods contact information and ask about products or orders." });
+}
 
 export default async function ContactPage({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ sent?: string; error?: string }> }) {
   const { lang: rawLang } = await params;

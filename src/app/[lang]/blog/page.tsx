@@ -1,6 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import { getT, getContent } from "@/lib/site";
 import { Lang, t } from "@/lib/constants";
 import Image from "next/image";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const lang = (await params).lang === "ur" ? "ur" : "en";
+  return pageMetadata(lang, "/blog", lang === "ur"
+    ? { title: "مصالحوں کا بلاگ", description: "مصالحوں اور پاکستانی کھانوں کے بارے میں آورا فوڈز کے مضامین پڑھیں۔" }
+    : { title: "Spice Blog and Guides", description: "Read Aura Foods articles about spices and Pakistani cooking." });
+}
 
 export default async function BlogPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

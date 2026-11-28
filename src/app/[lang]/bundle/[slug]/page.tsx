@@ -1,7 +1,8 @@
+import { breadcrumbs, pageMetadata, pageUrl, structuredData, webUrl } from "@/lib/seo";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Lang, SITE_URL } from "@/lib/constants";
+import { Lang, SITE_NAME } from "@/lib/constants";
 import { getBundleBySlug, getBundleItems } from "@/lib/data";
 import AddToCartButton from "@/components/AddToCartButton";
 
@@ -12,14 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const isUr = lang === "ur";
   const title = isUr ? bundle.nameUr : bundle.nameEn;
   const description = (isUr ? bundle.descriptionUr : bundle.descriptionEn) || title;
-  const url = `${SITE_URL}/${lang}/bundle/${slug}`;
-  return {
-    title,
-    description,
-    keywords: [title, isUr ? "مصالحہ بنڈل" : "spice bundle", isUr ? "آرگینک مصالحے" : "organic spices", isUr ? "آورا فوڈز" : "Aura Foods"],
-    alternates: { canonical: url },
-    openGraph: { title, description, type: "website", url },
-  };
+  return pageMetadata(isUr ? "ur" : "en", "/bundle/" + encodeURIComponent(slug), { title, description, image: bundle.image });
 }
 
 export default async function BundlePage({ params }: { params: Promise<{ lang: string; slug: string }> }) {
@@ -29,8 +23,19 @@ export default async function BundlePage({ params }: { params: Promise<{ lang: s
   if (!bundle || bundle.isHidden) return notFound();
   const items = await getBundleItems(bundle.id);
   const name = lang === "ur" ? bundle.nameUr : bundle.nameEn;
+  const path = "/bundle/" + encodeURIComponent(slug);
+  const url = pageUrl(lang, path);
+  const jsonLd = {
+    "@context": "https://schema.org", "@type": "Product", name, url,
+    description: (lang === "ur" ? bundle.descriptionUr : bundle.descriptionEn) || undefined,
+    brand: { "@type": "Brand", name: SITE_NAME }, image: webUrl(bundle.image || "/images/logo.jpg"),
+    offers: { "@type": "Offer", url, price: bundle.price, priceCurrency: "PKR",
+      availability: bundle.websiteStockStatus === "out_of_stock" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock" },
+  };
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData(breadcrumbs(lang, { name: lang === "ur" ? "خریداری" : "Shop", path: "/shop" }, {name, path})) }} />
       <div className="grid md:grid-cols-2 gap-10">
         <div className="relative aspect-square rounded-2xl overflow-hidden bg-white"><Image src={bundle.image || "/images/logo.jpg"} alt={name} fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" /></div>
         <div>

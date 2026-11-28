@@ -1,3 +1,4 @@
+import { structuredData } from "@/lib/seo";
 import type { Metadata } from "next";
 import "lenis/dist/lenis.css";
 // Handwritten font for the spice ribbon, bundled with the site (no Google Fonts dependency).
@@ -41,23 +42,13 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     metadataBase: new URL(SITE_URL),
     title: { default: title, template: `%s | ${SITE_NAME}` },
     description,
-    keywords: isUr
-      ? ["آرگینک مصالحے", "خالص مصالحہ جات", "پاکستانی مصالحے", "مسالہ بلینڈز", "آورا فوڈز"]
-      : ["organic spices", "Pakistani spices", "pure seasonings", "spice blends", "premium spices", "Aura Foods"],
-    alternates: {
-      canonical: `${SITE_URL}/${lang}`,
-      languages: { en: `${SITE_URL}/en`, ur: `${SITE_URL}/ur` },
+    verification: {
+      google: process.env.GOOGLE_SITE_VERIFICATION,
+      other: {
+        ...(process.env.FACEBOOK_DOMAIN_VERIFICATION ? { "facebook-domain-verification": process.env.FACEBOOK_DOMAIN_VERIFICATION } : {}),
+        ...(process.env.BING_SITE_VERIFICATION ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION } : {}),
+      },
     },
-    openGraph: {
-      url: `${SITE_URL}/${lang}`,
-      type: "website",
-      title,
-      description,
-      siteName: SITE_NAME,
-    },
-    verification: process.env.FACEBOOK_DOMAIN_VERIFICATION
-      ? { other: { "facebook-domain-verification": process.env.FACEBOOK_DOMAIN_VERIFICATION } }
-      : undefined,
     icons: { icon: "/images/favicon.jpg" },
   };
 }
@@ -70,6 +61,7 @@ export default async function LangLayout({ children, params }: { children: React
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": SITE_URL + "/#organization",
     name: site.siteName,
     url: SITE_URL,
     logo: `${SITE_URL}/images/logo.jpg`,
@@ -114,7 +106,7 @@ export default async function LangLayout({ children, params }: { children: React
             }}
           />
         )}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData(jsonLd) }} />
         <SiteProvider value={{ lang: l, dict, site }}>
         <MotionProviders>
           <SmoothScroll />

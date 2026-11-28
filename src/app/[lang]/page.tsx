@@ -1,3 +1,4 @@
+import { pageMetadata, structuredData } from "@/lib/seo";
 import { getT, getSiteInfo, getContent } from "@/lib/site";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -21,14 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const d = await getT(lang);
   const title = d.hero_title;
   const description = d.hero_sub;
-  return {
-    title,
-    description,
-    keywords: lang === "ur"
-      ? ["آرگینک مصالحے", "خالص مصالحہ جات", "پاکستانی مصالحے", "آورا فوڈز"]
-      : ["organic spices", "pure Pakistani spices", "spice blends", "Aura Foods"],
-    openGraph: { title: `${title} | ${SITE_NAME}`, description, type: "website", url: `${SITE_URL}/${lang}` },
-  };
+  return pageMetadata(lang, "", { title, description, image: "/images/home-banner.jpg" });
 }
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
@@ -54,6 +48,10 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData({
+        "@context": "https://schema.org", "@type": "WebSite", "@id": SITE_URL + "/#website",
+        name: SITE_NAME, url: SITE_URL, inLanguage: ["en", "ur"], publisher: { "@id": SITE_URL + "/#organization" },
+      }) }} />
       <section data-no-depth className="relative overflow-hidden bg-[#FBF3E7]">
         <HeroMotion
           className="relative mx-auto w-full max-w-6xl aspect-[1122/1402] overflow-hidden rounded-[2rem]"

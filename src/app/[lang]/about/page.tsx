@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import { getT, getContent, getSiteInfo } from "@/lib/site";
 import { getAllProducts } from "@/lib/data";
 import { Lang, t } from "@/lib/constants";
@@ -5,6 +6,13 @@ import AboutCarousel from "@/components/AboutCarousel";
 import AnimatedTitle from "@/components/motion/AnimatedTitle";
 import CountUp from "@/components/reactbits/CountUp";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const lang = (await params).lang === "ur" ? "ur" : "en";
+  return pageMetadata(lang, "/about", lang === "ur"
+    ? { title: "آورا فوڈز کے بارے میں", description: "آورا فوڈز، ہمارے مصالحوں اور ہماری اقدار کے بارے میں جانیں۔" }
+    : { title: "About Aura Foods", description: "Learn about Aura Foods, our spice range and what we stand for." });
+}
 
 export default async function AboutPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

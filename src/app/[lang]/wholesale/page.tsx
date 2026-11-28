@@ -1,9 +1,17 @@
+import { pageMetadata } from "@/lib/seo";
 import { getT, getSiteInfo } from "@/lib/site";
 import { Lang } from "@/lib/constants";
 import { getAllProducts } from "@/lib/data";
 import { WHOLESALE_VARIANT } from "@/lib/pricing";
 import AddToCartButton from "@/components/AddToCartButton";
 import Image from "next/image";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const lang = (await params).lang === "ur" ? "ur" : "en";
+  return pageMetadata(lang, "/wholesale", lang === "ur"
+    ? { title: "ہول سیل مصالحے", description: "آورا فوڈز کے ہول سیل مصالحے دیکھیں اور بڑی مقدار کے آرڈرز کے لیے رابطہ کریں۔" }
+    : { title: "Wholesale Spices", description: "Browse Aura Foods spices available for wholesale and contact us for bulk orders." });
+}
 
 export default async function WholesalePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

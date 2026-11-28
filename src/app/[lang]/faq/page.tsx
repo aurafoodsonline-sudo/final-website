@@ -1,9 +1,17 @@
+import { pageMetadata } from "@/lib/seo";
 import { getT, getContent, getSiteInfo } from "@/lib/site";
 import { Lang, t } from "@/lib/constants";
 import { deliveryRuleText } from "@/lib/pricing";
 
 // Rendered on each visit so the delivery answer always matches Admin → Settings.
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const lang = (await params).lang === "ur" ? "ur" : "en";
+  return pageMetadata(lang, "/faq", lang === "ur"
+    ? { title: "اکثر پوچھے گئے سوالات", description: "آرڈر، ڈیلیوری اور مصنوعات کے بارے میں عام سوالات کے جواب دیکھیں۔" }
+    : { title: "Frequently Asked Questions", description: "Find answers about Aura Foods orders, delivery and products." });
+}
 
 export default async function FaqPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;

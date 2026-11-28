@@ -1,25 +1,28 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/constants";
 import { getAllProducts, getAllBundles } from "@/lib/data";
+import { getFooterPolicies } from "@/lib/site";
+import { languages, pageUrl, webUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = (await getAllProducts()).filter((p) => !p.noIndex);
-  const bundles = await getAllBundles();
-  const staticPaths = ["", "/shop", "/about", "/wholesale", "/blog", "/faq", "/contact", "/track-order", "/support", "/policy/privacy-policy", "/policy/return-policy", "/policy/shipping-policy", "/policy/terms"];
-  const langs = ["en", "ur"];
+  const [products, bundles, policies] = await Promise.all([getAllProducts(), getAllBundles(), getFooterPolicies()]);
+  const paths = [
+    "", "/shop", "/about", "/wholesale", "/blog", "/faq", "/contact", "/track-order", "/support",
+    ...policies.map(({ slug }) => "/policy/" + encodeURIComponent(slug)),
+  ];
   const entries: MetadataRoute.Sitemap = [];
-  for (const lang of langs) {
-    for (const p of staticPaths) {
-      entries.push({ url: `${SITE_URL}/${lang}${p}`, changeFrequency: "weekly", priority: p === "" ? 1 : 0.7 });
+  const add = (path: string, image?: string | null, override?: string | null) => {
+    const canonical = webUrl(override);
+    const imageUrl = webUrl(image);
+    for (const lang of ["en", "ur"] as const) {
+      const url = pageUrl(lang, path);
+      if (canonical && canonical !== url) continue;
+      entries.push({ url, ...(!canonical ? { alternates: { languages: languages(path) } } : {}), ...(imageUrl ? { images: [imageUrl] } : {}) });
     }
-    for (const p of products) {
-      entries.push({ url: `${SITE_URL}/${lang}/product/${p.slug}`, changeFrequency: "weekly", priority: 0.8 });
-    }
-    for (const b of bundles) {
-      entries.push({ url: `${SITE_URL}/${lang}/bundle/${b.slug}`, changeFrequency: "weekly", priority: 0.6 });
-    }
-  }
+  };
+  paths.forEach((path) => add(path));
+  products.filter((p) => !p.noIndex).forEach((p) => add("/product/" + encodeURIComponent(p.slug), p.image, p.canonicalUrl));
+  bundles.forEach((b) => add("/bundle/" + encodeURIComponent(b.slug), b.image));
   return entries;
 }

@@ -2,6 +2,8 @@ import { getT } from "@/lib/site";
 import { Lang, t } from "@/lib/constants";
 import CartView from "@/components/CartView";
 
+export const metadata = { robots: { index: false, follow: true } };
+
 export default async function CartPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang: rawLang } = await params;
   const lang = (rawLang === "ur" ? "ur" : "en") as Lang;
